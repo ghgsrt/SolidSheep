@@ -27,7 +27,7 @@ const InventoryItem: Component<props> = (props) => {
 				<div
 					class='icon'
 					style={{
-						'background-image': `url(public/icons/${props.item?.img})`,
+						'background-image': `url(/icons/${props.item?.img})`,
 					}}
 				></div>
 			</div>

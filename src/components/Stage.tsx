@@ -32,7 +32,7 @@ const Stage: Component<props> = () => {
 					ref={backdrop}
 					class={`backdrop ${view.isSpecial() && 'special'}`}
 					style={{
-						'background-image': `url(public/backgrounds/${state.bgImage})`,
+						'background-image': `url(/backgrounds/${state.bgImage})`,
 					}}
 				></div>
 				<Side left />

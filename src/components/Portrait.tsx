@@ -31,7 +31,7 @@ const Portrait: Component<props> = (props) => {
 					props.active ? 'active' : ''
 				}`}
 				style={{
-					'background-image': `url(public/characters/${props.src})`,
+					'background-image': `url(/characters/${props.src})`,
 				}}
 			></div>
 		</>

@@ -501,7 +501,7 @@ section.left > .portrait-wrapper > svg {
 	margin: 0 2%;
 	z-index: 0;
 	border-radius: 5px;
-	background: url(icons/icon_bg.png) no-repeat;
+	background: url(public/icons/icon_bg.png) no-repeat;
 	background-size: cover;
 	flex: 1;
 	vertical-align: middle;
@@ -519,7 +519,7 @@ section.left > .portrait-wrapper > svg {
 	position: absolute;
 	left: calc((100% - var(--icon-border-dim)) / 2);
 	z-index: 2;
-	background: url(icons/icon_bg2.png) no-repeat;
+	background: url(public/icons/icon_bg2.png) no-repeat;
 	background-size: cover;
 }
 .inventory-item > .icon {

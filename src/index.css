@@ -496,6 +496,7 @@ section.left > .portrait-wrapper > svg {
 }
 
 .inventory-item {
+	--icon-border-dim: 115%;
 	max-width: 45px;
 	position: relative;
 	margin: 0 2%;
@@ -512,7 +513,6 @@ section.left > .portrait-wrapper > svg {
 }
 
 .inventory-item::after {
-	--icon-border-dim: 115%;
 	content: '';
 	width: var(--icon-border-dim);
 	height: var(--icon-border-dim);

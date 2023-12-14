@@ -13,8 +13,16 @@ const Middle: Component<props> = () => {
 				<NameBar
 					left={state.leftPortraitName}
 					right={state.rightPortraitName}
-					leftIsActive={state.activeSpeaker === state.leftPortraitName}
-					rightIsActive={state.activeSpeaker === state.rightPortraitName}
+					leftIsActive={
+						state.activeSpeaker === state.leftPortraitName ||
+						(state.activeSpeaker === 'Player' &&
+							state.playerName === state.leftPortraitName)
+					}
+					rightIsActive={
+						state.activeSpeaker === state.rightPortraitName ||
+						(state.activeSpeaker === 'Player' &&
+							state.playerName === state.rightPortraitName)
+					}
 				/>
 				<div
 					class='wrapper'

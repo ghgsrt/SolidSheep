@@ -31,7 +31,14 @@ const Side: Component<props> = (props) => {
 						hide={props.right ? view.hideRightImage() : view.hideLeftImage()}
 						active={
 							state.activeSpeaker ===
-							(props.right ? state.rightPortraitName : state.leftPortraitName)
+								(props.right
+									? state.rightPortraitName
+									: state.leftPortraitName) ||
+							(state.activeSpeaker === 'Player' &&
+								state.playerName ===
+									(props.right
+										? state.rightPortraitName
+										: state.leftPortraitName))
 						}
 					/>
 					<svg>

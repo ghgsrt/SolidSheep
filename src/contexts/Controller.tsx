@@ -4,6 +4,7 @@ import {
 	Component,
 	useContext,
 	batch,
+	createEffect,
 } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import { Flag, State, StoryOptions, state, setState } from './SessionState';
@@ -66,6 +67,8 @@ const ControllerProvider: Component<Props> = (props) => {
 		undefined
 	);
 	const [currIdx, setCurrIdx] = createSignal(0);
+
+	createEffect(() => (entityLUT.PL!.name = state.playerName));
 
 	const prompt: ControllerFns['prompt'] = (prompt) => {
 		if (!prompt) return;

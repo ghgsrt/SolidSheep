@@ -2,7 +2,7 @@ import { Component } from 'solid-js';
 import Dialogue from './Dialogue';
 import NameBar from './NameBar';
 import TabBar from './TabBar';
-import { state } from '../contexts/SessionState';
+import { state } from '../../contexts/SessionState';
 
 type props = {};
 

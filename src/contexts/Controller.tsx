@@ -9,18 +9,21 @@ import { JSX } from 'solid-js/jsx-runtime';
 import { Flag, State, StoryOptions, state, setState } from './SessionState';
 import { ItemID } from '../core/items/item';
 import { produce } from 'solid-js/store';
-import { Dialogue, GetDialogue, Speaker } from '../core/dialogues/dialogue';
+import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
 import { entityLUT, itemLUT, speakerLUT } from '../core/LUTs';
-import { Entity } from '../core/entities/entity';
+import { Entity, EntityID } from '../core/entities/entity';
 import promptParser from '../core/parser';
 import { useView } from './View';
 
-type DialogueLookupFn<R = void> = <T extends Speaker, N extends GetDialogue<T>>(
+type DialogueLookupFn<R = void> = <
+	T extends EntityID,
+	N extends GetDialogue<T>
+>(
 	speaker: T,
 	dialogue: N
 ) => R;
 type EntityOrDialogueLookupFn<R = void> = <
-	T extends Speaker,
+	T extends EntityID,
 	N extends GetDialogue<T>
 >(
 	speaker: T,
@@ -102,10 +105,10 @@ const ControllerProvider: Component<Props> = (props) => {
 			currDialogue()?.onEnd?.(context);
 	};
 
-	let dialogueQueue: [Speaker, GetDialogue<Speaker>][] = [];
+	let dialogueQueue: [EntityID, GetDialogue<EntityID>][] = [];
 	const _runDialogue = async (
-		speaker: Speaker,
-		dialogue: GetDialogue<Speaker>,
+		speaker: EntityID,
+		dialogue: GetDialogue<EntityID>,
 		onNextClick = true
 	) => {
 		if (onNextClick) {

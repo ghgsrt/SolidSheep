@@ -1,5 +1,5 @@
 import { Component, onMount } from 'solid-js';
-import { useView } from '../contexts/View';
+import { useView } from '../../contexts/View';
 import TabGroup from './TabGroup';
 
 type props = {};
@@ -10,7 +10,7 @@ const TabBar: Component<props> = () => {
 	onMount(() => {
 		const tabs = document.querySelectorAll('.tab');
 
-		view.runOnResize(() => {
+		const resize = () => {
 			let max = 0;
 			for (const tab of tabs) {
 				const width = tab.clientWidth;
@@ -20,7 +20,9 @@ const TabBar: Component<props> = () => {
 				//@ts-ignore - this is fine
 				tab.style.width = `${max}px`;
 			}
-		});
+		};
+		view.runOnResize(resize);
+		resize();
 	});
 
 	return (

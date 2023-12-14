@@ -1,10 +1,11 @@
 import { Component, createEffect, createSignal } from 'solid-js';
-import { Item } from '../core/items/item';
-import { formatLabel } from '../utils/utils';
-import { state } from '../contexts/SessionState';
+import { Item } from '../../core/items/item';
+import { formatLabel } from '../../utils/utils';
+import { state } from '../../contexts/SessionState';
 
 type props = {
 	ref: HTMLDivElement;
+	offset: ['left' | 'right', string];
 	item?: Item;
 };
 
@@ -32,7 +33,12 @@ const InventoryItem: Component<props> = (props) => {
 				></div>
 			</div>
 			{props.item && (
-				<section class='tooltip'>
+				<div
+					class='tooltip'
+					style={{
+						[props.offset[0]]: props.offset[1],
+					}}
+				>
 					{hasExamined() ? (
 						<>
 							<div class='name'>{props.item?.name}</div>
@@ -55,7 +61,7 @@ const InventoryItem: Component<props> = (props) => {
 							</div>
 						</>
 					)}
-				</section>
+				</div>
 			)}
 		</>
 	);

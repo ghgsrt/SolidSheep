@@ -1,8 +1,8 @@
 import { Component, createEffect } from 'solid-js';
 import Inventory from './Inventory';
 import Portrait from './Portrait';
-import { state } from '../contexts/SessionState';
-import { useView } from '../contexts/View';
+import { state } from '../../contexts/SessionState';
+import { useView } from '../../contexts/View';
 
 type props = {
 	right?: boolean;

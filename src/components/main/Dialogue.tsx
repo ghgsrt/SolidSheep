@@ -1,7 +1,7 @@
 import { Component, Show, createEffect, createSignal, onMount } from 'solid-js';
-import { state } from '../contexts/SessionState';
-import { useController } from '../contexts/Controller';
-import useEventListener from '../hooks/useEventListener';
+import { state } from '../../contexts/SessionState';
+import { useController } from '../../contexts/Controller';
+import useEventListener from '../../hooks/useEventListener';
 
 type props = {};
 

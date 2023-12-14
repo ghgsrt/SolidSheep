@@ -1,10 +1,10 @@
 import { factory } from './factory';
-import { Dialogue, GetDialogue, Speaker } from './dialogues/dialogue';
-import { DMDialogue, DMDialogues } from './dialogues/DM';
-import { GZDialogue, GZDialogues } from './dialogues/GZ';
-import { SBDialogue, SBDialogues } from './dialogues/SB';
-import { MPDialogue, MPDialogues } from './dialogues/MP';
-import { PLDialogue, PLDialogues } from './dialogues/PL';
+import { Dialogue, GetDialogue } from './dialogues/dialogue';
+import { DMDialogueNames, DMDialogues } from './dialogues/DM';
+import { GZDialogueNames, GZDialogues } from './dialogues/GZ';
+import { SBDialogueNames, SBDialogues } from './dialogues/SB';
+import { MPDialogueNames, MPDialogues } from './dialogues/MP';
+import { PLDialogueNames, PLDialogues } from './dialogues/PL';
 import { Entity, EntityID, entities } from './entities/entity';
 import {
 	// ArmorID,
@@ -16,8 +16,8 @@ import {
 } from './items/item';
 
 export const speakerLUT: Record<
-	Speaker,
-	Partial<Record<GetDialogue<Speaker>, Dialogue>>
+	EntityID,
+	Partial<Record<GetDialogue<EntityID>, Dialogue>>
 > = {
 	DM: {},
 	PL: {},
@@ -30,16 +30,16 @@ export const itemLUT: Partial<Record<ItemID, any>> = {};
 // export const weaponLUT: Partial<Record<WeaponID, any>> = {};
 // export const armorLUT: Partial<Record<ArmorID, any>> = {};
 
-for (const key in DMDialogues)
-	speakerLUT.DM[key as DMDialogue] = factory.DM(DMDialogues[key as DMDialogue]);
-for (const key in PLDialogues)
-	speakerLUT.PL[key as PLDialogue] = factory.PL(PLDialogues[key as PLDialogue]);
-for (const key in MPDialogues)
-	speakerLUT.MP[key as MPDialogue] = factory.MP(MPDialogues[key as MPDialogue]);
-for (const key in SBDialogues)
-	speakerLUT.SB[key as SBDialogue] = factory.SB(SBDialogues[key as SBDialogue]);
-for (const key in GZDialogues)
-	speakerLUT.GZ[key as GZDialogue] = factory.GZ(GZDialogues[key as GZDialogue]);
+for (const key of DMDialogueNames)
+	speakerLUT.DM[key] = factory.DM(DMDialogues[key]);
+for (const key of PLDialogueNames)
+	speakerLUT.PL[key] = factory.PL(PLDialogues[key]);
+for (const key of MPDialogueNames)
+	speakerLUT.MP[key] = factory.MP(MPDialogues[key]);
+for (const key of SBDialogueNames)
+	speakerLUT.SB[key] = factory.SB(SBDialogues[key]);
+for (const key of GZDialogueNames)
+	speakerLUT.GZ[key] = factory.GZ(GZDialogues[key]);
 
 for (const key in entities)
 	entityLUT[key as EntityID] = factory.Entity(entities[key as EntityID]);

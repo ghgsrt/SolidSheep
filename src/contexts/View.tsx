@@ -12,11 +12,17 @@ import {
 import useEventListener from '../hooks/useEventListener';
 import { sleep } from '../utils/utils';
 
+export type View = 'main' | 'intro' | 'outro';
+
 type Props = {
 	children: JSX.Element | JSX.Element[];
 };
 
 export type ViewValues = {
+	currView: Accessor<View>;
+	setCurrView: Setter<View>;
+	pending: Accessor<boolean>;
+	updateView: (view: View) => void;
 	hideLeftImage: Accessor<boolean>;
 	setHideLeftImage: Setter<boolean>;
 	hideRightImage: Accessor<boolean>;
@@ -39,6 +45,16 @@ export type ViewValues = {
 const ViewContext = createContext<ViewValues>();
 
 const ViewProvider: Component<Props> = (props) => {
+	const [currView, setCurrView] = createSignal<View>('intro');
+	const [pending, setPending] = createSignal(false);
+
+	const updateView = async (view: View) => {
+		setPending(true);
+		await sleep(2000);
+		setCurrView(view);
+		setPending(false);
+	};
+
 	const [hideLeftImage, setHideLeftImage] = createSignal(false);
 	const [hideRightImage, setHideRightImage] = createSignal(false);
 	const [hideLeftName, setHideLeftName] = createSignal(false);
@@ -125,6 +141,10 @@ const ViewProvider: Component<Props> = (props) => {
 	});
 
 	const context: ViewValues = {
+		pending,
+		updateView,
+		currView,
+		setCurrView,
 		hideLeftImage,
 		setHideLeftImage,
 		hideRightImage,

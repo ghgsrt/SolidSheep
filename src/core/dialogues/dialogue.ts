@@ -1,11 +1,11 @@
 import { ControllerFns } from '../../contexts/Controller';
-import { Subset } from '../../types/utils';
+import { EnsureFnParamTyping, OmitDefaults } from '../../types/utils';
 import { EntityID } from '../entities/entity';
-import { DMDialogue } from './DM';
-import { GZDialogue } from './GZ';
-import { MPDialogue } from './MP';
-import { PLDialogue } from './PL';
-import { SBDialogue } from './SB';
+import { DMDialogueName } from './DM';
+import { GZDialogueName } from './GZ';
+import { MPDialogueName } from './MP';
+import { PLDialogueName } from './PL';
+import { SBDialogueName } from './SB';
 
 export type Dialogue = {
 	text: string[];
@@ -21,7 +21,7 @@ export type Dialogue = {
 
 export const defaultDialogueProps = {
 	bgImage: '',
-	entity: 'DM',
+	// entity: 'DM',
 	portrait: '',
 	portraitName: '',
 	speaker: '',
@@ -30,22 +30,43 @@ export const defaultDialogueProps = {
 	beforeNext: undefined,
 } as const satisfies Partial<Dialogue>;
 
-export type ReqDialogueProps = Omit<
+export type ReqDialogueProps = OmitDefaults<
 	Dialogue,
 	keyof typeof defaultDialogueProps
-> &
-	Subset<Pick<Dialogue, keyof typeof defaultDialogueProps>>;
+>;
 
-const speaker = ['DM', 'PL', 'MP', 'SB', 'GZ'] as const;
-export type Speaker = (typeof speaker)[number];
-export type GetDialogue<T extends Speaker> = T extends 'DM'
-	? DMDialogue
+export const createDialogue = <D extends string, P extends Partial<Dialogue>>(
+	defProps: P,
+	dialogues: Record<
+		D,
+		//@ts-ignore -- it works 🤷🏻‍♂️
+		EnsureFnParamTyping<OmitDefaults<ReqDialogueProps, keyof P>>
+	>
+) => {
+	return [defProps, dialogues] as const;
+};
+
+// const speaker = ['DM', 'PL', 'MP', 'SB', 'GZ'] as const;
+// export type Speaker = (typeof speaker)[number];
+export type GetDialogue<T extends EntityID> = T extends 'DM'
+	? DMDialogueName
 	: T extends 'PL'
-	? PLDialogue
+	? PLDialogueName
 	: T extends 'MP'
-	? MPDialogue
+	? MPDialogueName
 	: T extends 'SB'
-	? SBDialogue
+	? SBDialogueName
 	: T extends 'GZ'
-	? GZDialogue
+	? GZDialogueName
 	: never;
+
+// ? keyof typeof DMDialogues
+// : T extends 'PL'
+// ? keyof typeof PLDialogues
+// : T extends 'MP'
+// ? keyof typeof MPDialogues
+// : T extends 'SB'
+// ? keyof typeof SBDialogues
+// : T extends 'GZ'
+// ? keyof typeof GZDialogues
+// : never;

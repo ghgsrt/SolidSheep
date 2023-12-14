@@ -1,9 +1,9 @@
 import { Component, For, createEffect, on, onMount } from 'solid-js';
 import Prompter from './Prompter';
-import { state } from '../contexts/SessionState';
-import { useController } from '../contexts/Controller';
-import useEventListener from '../hooks/useEventListener';
-import { useView } from '../contexts/View';
+import { state } from '../../contexts/SessionState';
+import { useController } from '../../contexts/Controller';
+import useEventListener from '../../hooks/useEventListener';
+import { useView } from '../../contexts/View';
 
 type props = {};
 

@@ -1,5 +1,5 @@
 import { Component, createEffect, onMount } from 'solid-js';
-import { useView } from '../contexts/View';
+import { useView } from '../../contexts/View';
 
 type props = {
 	src: string;
@@ -12,9 +12,10 @@ const Portrait: Component<props> = (props) => {
 	const { runOnResize } = useView()!;
 
 	onMount(() => {
-		runOnResize(
-			() => (portrait.style.height = `${portrait!.offsetWidth * 2}px`)
-		);
+		const resize = () =>
+			(portrait.style.height = `${portrait!.offsetWidth * 2}px`);
+		runOnResize(resize);
+		resize();
 	});
 
 	createEffect(() => {

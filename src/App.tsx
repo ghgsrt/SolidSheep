@@ -1,18 +1,14 @@
 import './App.css';
 import ControllerProvider from './contexts/Controller';
-import Dock from './components/Dock';
 import ViewProvider from './contexts/View';
-import Stage from './components/Stage';
+import Main from './components/Main';
 
 function App() {
 	return (
 		<>
 			<ViewProvider>
 				<ControllerProvider>
-					<main>
-						<Stage />
-						<Dock />
-					</main>
+					<Main />
 				</ControllerProvider>
 			</ViewProvider>
 		</>

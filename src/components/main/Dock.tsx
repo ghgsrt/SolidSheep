@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { useView } from '../contexts/View';
+import { useView } from '../../contexts/View';
 import DockItem from './DockItem';
 
 type props = {};

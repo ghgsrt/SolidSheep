@@ -10,7 +10,7 @@ export type TailParameters<T extends (...args: any[]) => any> = (
 
 export type ExtraParameters<
 	T extends (...args: any[]) => any,
-	E extends (any)[]
+	E extends any[]
 > = (...args: [...Parameters<T>, ...E]) => ReturnType<T>;
 
 export type Subset<K> = {
@@ -23,4 +23,13 @@ export type Subset<K> = {
 		: K[attr] extends object | null | undefined
 		? Subset<K[attr]> | null | undefined
 		: K[attr];
+};
+
+export type OmitDefaults<T, D extends keyof T> = Omit<T, D> &
+	Subset<Pick<T, D>>;
+
+export type EnsureFnParamTyping<T> = {
+	[P in keyof T]: T[P] extends (...args: any[]) => any
+		? (...args: Parameters<T[P]>) => ReturnType<T[P]>
+		: T[P];
 };

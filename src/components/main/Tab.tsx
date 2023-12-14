@@ -1,5 +1,5 @@
 import { Accessor, Component, Setter } from 'solid-js';
-import { formatLabel } from '../utils/utils';
+import { formatLabel } from '../../utils/utils';
 
 type props = {
 	key: string;

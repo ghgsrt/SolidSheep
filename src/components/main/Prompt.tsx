@@ -1,7 +1,7 @@
 import { Component, For, createEffect, on, onMount } from 'solid-js';
 import Prompter from './Prompter';
 import { state } from '../../contexts/SessionState';
-import { useController } from '../../contexts/Controller';
+// import { useController } from '../../contexts/Controller';
 import useEventListener from '../../hooks/useEventListener';
 import { useView } from '../../contexts/View';
 
@@ -11,16 +11,16 @@ let history: HTMLDivElement;
 let input: HTMLInputElement;
 let cachedValue = '';
 const Prompt: Component<props> = () => {
-	const controller = useController()!;
+	// const controller = useController()!;
 	const view = useView()!;
 
 	const prompt = () => {
-		controller.prompt(input.value.trim());
-		input.value = '';
-		history.scrollTo({
-			top: history.scrollHeight,
-			behavior: 'smooth',
-		});
+		// controller.prompt(input.value.trim());
+		// input.value = '';
+		// history.scrollTo({
+		// 	top: history.scrollHeight,
+		// 	behavior: 'smooth',
+		// });
 	};
 
 	onMount(() => {

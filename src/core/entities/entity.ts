@@ -14,7 +14,7 @@ export const defaultEntityProps = {
 export type ReqEntityProps = Omit<Entity, keyof typeof defaultEntityProps> &
 	Subset<Pick<Entity, keyof typeof defaultEntityProps>>;
 
-const entity = ['DM', 'PL', 'MP', 'SB', 'GZ'] as const;
+const entity = ['DM', 'PL', 'MP1', 'MP2', 'SB', 'GZ'] as const;
 export type EntityID = (typeof entity)[number];
 
 export const entities: Record<EntityID, ReqEntityProps> = {
@@ -25,26 +25,32 @@ export const entities: Record<EntityID, ReqEntityProps> = {
 	},
 	PL: {
 		id: 'PL',
-		name: 'Player',
-		portrait: 'player.png',
-		speaker: 'Player',
+		name: '',
+		portrait: '',
+		speaker: 'PL',
 	},
 	GZ: {
 		id: 'GZ',
-		name: 'Gruz',
-		portrait: 'gruz.png',
-		speaker: 'Gruz',
+		name: 'Guz',
+		portrait: 'guz.png',
+		speaker: 'Guz',
 	},
 	SB: {
 		id: 'SB',
 		name: 'Finethir Shinebright',
 		portrait: 'sheep.png',
-		speaker: 'Finethir Shinebright',
+		speaker: 'SB',
 	},
-	MP: {
-		id: 'MP',
-		name: 'Party Member',
-		portrait: 'mage_party.png',
-		speaker: 'Party Member',
+	MP1: {
+		id: 'MP1',
+		name: '',
+		portrait: '',
+		speaker: '',
+	},
+	MP2: {
+		id: 'MP2',
+		name: '',
+		portrait: '',
+		speaker: '',
 	},
 };

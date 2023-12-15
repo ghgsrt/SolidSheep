@@ -21,7 +21,7 @@ export const [SBDefaultProps, SBDialogues] = createDialogue(
 			speaker: 'Mysterious Sheep',
 			onEnd: ({ setOptions, runDialogue }) => {
 				setOptions({
-					use: { scroll: () => runDialogue('DM', 'playerUsesScroll') },
+					'Activate the scroll': () => runDialogue('DM', 'playerUsesScroll'),
 				});
 			},
 		},
@@ -43,8 +43,8 @@ export const [SBDefaultProps, SBDialogues] = createDialogue(
 				toggleFlag('SBExplainedQuest');
 				queueDialogue('DM', 'gruzAppears');
 			},
-			beforeNext: ({ clearPortrait }) =>
-				clearPortrait('SB', 'sheepExplainsQuest'),
+			beforeNext: async ({ clearPortrait }) =>
+				await clearPortrait('SB', 'sheepExplainsQuest'),
 		},
 	}
 );

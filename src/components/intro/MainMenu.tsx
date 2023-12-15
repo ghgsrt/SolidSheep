@@ -1,4 +1,4 @@
-import { Component, createSignal } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
 import { useView } from '../../contexts/View';
 import { setState } from '../../contexts/SessionState';
 
@@ -13,10 +13,14 @@ const MainMenu: Component<props> = () => {
 		if (value()) view.updateView('main');
 	};
 
+	onMount(() => document.querySelector('input')?.focus());
+
 	return (
 		<>
 			<div class='main-menu'>
+				<h3>Based on</h3>
 				<h1>The Wild Sheep Chase</h1>
+				<h3>A DnD One-Shot</h3>
 				<input
 					onInput={(e) => setValue(e.target.value)}
 					type='text'

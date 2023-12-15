@@ -3,7 +3,7 @@ import { Dialogue, GetDialogue } from './dialogues/dialogue';
 import { DMDialogueNames, DMDialogues } from './dialogues/DM';
 import { GZDialogueNames, GZDialogues } from './dialogues/GZ';
 import { SBDialogueNames, SBDialogues } from './dialogues/SB';
-import { MPDialogueNames, MPDialogues } from './dialogues/MP';
+import { MP1DialogueNames, MP1Dialogues } from './dialogues/MP1';
 import { PLDialogueNames, PLDialogues } from './dialogues/PL';
 import { Entity, EntityID, entities } from './entities/entity';
 import {
@@ -14,6 +14,7 @@ import {
 	items,
 	// weapons,
 } from './items/item';
+import { MP2DialogueNames, MP2Dialogues } from './dialogues/MP2';
 
 export const speakerLUT: Record<
 	EntityID,
@@ -21,7 +22,8 @@ export const speakerLUT: Record<
 > = {
 	DM: {},
 	PL: {},
-	MP: {},
+	MP1: {},
+	MP2: {},
 	SB: {},
 	GZ: {},
 };
@@ -34,8 +36,11 @@ for (const key of DMDialogueNames)
 	speakerLUT.DM[key] = factory.DM(DMDialogues[key]);
 for (const key of PLDialogueNames)
 	speakerLUT.PL[key] = factory.PL(PLDialogues[key]);
-for (const key of MPDialogueNames)
-	speakerLUT.MP[key] = factory.MP(MPDialogues[key]);
+for (const key of MP1DialogueNames)
+	speakerLUT.MP1[key] = factory.MP1(MP1Dialogues[key]);
+for (const key of MP2DialogueNames)
+//@ts-ignore smh my h
+	speakerLUT.MP2[key] = factory.MP2(MP2Dialogues[key]);
 for (const key of SBDialogueNames)
 	speakerLUT.SB[key] = factory.SB(SBDialogues[key]);
 for (const key of GZDialogueNames)

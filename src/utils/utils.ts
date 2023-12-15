@@ -58,3 +58,6 @@ export const sleep = (ms: number) =>
 
 export const formatLabel = (label: string) =>
 	label.charAt(0).toUpperCase() + label.slice(1);
+
+export const descendingLen = <T extends { length: number }>(a: T, b: T) =>
+	b.length - a.length;

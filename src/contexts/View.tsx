@@ -13,6 +13,7 @@ import useEventListener from '../hooks/useEventListener';
 import { sleep } from '../utils/utils';
 
 export type View = 'main' | 'intro' | 'outro';
+export type DockView = 'prompt' | 'combat' | 'journal' | 'notebook';
 
 type Props = {
 	children: JSX.Element | JSX.Element[];
@@ -23,6 +24,12 @@ export type ViewValues = {
 	setCurrView: Setter<View>;
 	pending: Accessor<boolean>;
 	updateView: (view: View) => void;
+	dockView: Accessor<DockView>;
+	setDockView: Setter<DockView>;
+	optionsHeightTarget: Accessor<number>;
+	setOptionsHeightTarget: Setter<number>;
+	showOptions: Accessor<boolean>;
+	setShowOptions: Setter<boolean>;
 	hideLeftImage: Accessor<boolean>;
 	setHideLeftImage: Setter<boolean>;
 	hideRightImage: Accessor<boolean>;
@@ -54,6 +61,10 @@ const ViewProvider: Component<Props> = (props) => {
 		setCurrView(view);
 		setPending(false);
 	};
+
+	const [dockView, setDockView] = createSignal<DockView>('prompt');
+	const [optionsHeightTarget, setOptionsHeightTarget] = createSignal(0);
+	const [showOptions, setShowOptions] = createSignal(false);
 
 	const [hideLeftImage, setHideLeftImage] = createSignal(false);
 	const [hideRightImage, setHideRightImage] = createSignal(false);
@@ -145,6 +156,12 @@ const ViewProvider: Component<Props> = (props) => {
 		updateView,
 		currView,
 		setCurrView,
+		dockView,
+		setDockView,
+		optionsHeightTarget,
+		setOptionsHeightTarget,
+		showOptions,
+		setShowOptions,
 		hideLeftImage,
 		setHideLeftImage,
 		hideRightImage,

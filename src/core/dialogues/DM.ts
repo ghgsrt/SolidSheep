@@ -9,6 +9,7 @@ export const DMDialogueNames = [
 	'playerExaminesScroll',
 	'playerUsesScroll',
 	'gruzAppears',
+	'gruzGrabsSheep',
 	'__placeholder',
 ] as const;
 export type DMDialogueName = (typeof DMDialogueNames)[number];
@@ -39,10 +40,23 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 			onEnd: ({ toggleFlag, setOptions, runDialogue }) => {
 				toggleFlag('canGetSwA');
 
+				// setOptions({
+				// 	AAAAAAAAAAAAAA: () => {},
+				// 	BBBBBBBBBBBBBB: () => {},
+				// 	CCCCCCCCCCCCCC: () => {},
+				// 	DDDDDDDDDDDDDD: () => {},
+				// 	EEEEEEEEEEEEEE: () => {},
+				// 	FFFFFFFFFFFFFF: () => {},
+				// });
 				setOptions({
-					take: {
-						scroll: () => runDialogue('PL', 'takesScroll'),
-					},
+					"Take the scroll from the sheep's mouth": () =>
+						runDialogue('PL', 'takesScroll'),
+											AAAAAAAAAAAAAA: () => {},
+					BBBBBBBBBBBBBB: () => {},
+					CCCCCCCCCCCCCC: () => {},
+					DDDDDDDDDDDDDD: () => {},
+					EEEEEEEEEEEEEE: () => {},
+					FFFFFFFFFFFFFF: () => {},
 				});
 			},
 		},
@@ -54,8 +68,9 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 				toggleFlag('hasExaminedScroll');
 
 				setOptions({
-					explain: { scroll: () => runDialogue('PL', 'explainsScroll') },
-					use: { scroll: () => runDialogue('DM', 'playerUsesScroll') },
+					'Explain the scroll to your party': () =>
+						runDialogue('PL', 'explainsScroll'),
+					'Use the scroll': () => runDialogue('DM', 'playerUsesScroll'),
 				});
 			},
 		},
@@ -79,6 +94,13 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 				'The Half-Orc sets his small eyes on you and strides forward with one hand resting on the hilt of a greatsword.',
 			],
 			onEnd: ({ queueDialogue }) => queueDialogue('GZ', 'intro'),
+		},
+		gruzGrabsSheep: {
+			text: [
+				'Before anyone has a chance to react one of the wolves darts forward, grabs the sheep in its jaws, and retreats back to the Half-Orc with its prize.',
+				'Gruz grabs the sheep and throws it over his shoulder',
+			],
+			onEnd: ({ queueDialogue }) => queueDialogue('GZ', 'takingSheep'),
 		},
 		__placeholder: {
 			text: ['🤡 PLACEHOLDER 🤡'],

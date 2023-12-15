@@ -1,7 +1,8 @@
 import { deepCopy, deepMerge } from '../utils/utils';
 import { DMDefaultProps } from './dialogues/DM';
 import { GZDefaultProps } from './dialogues/GZ';
-import { MPDefaultProps } from './dialogues/MP';
+import { MP1DefaultProps } from './dialogues/MP1';
+import { MP2DefaultProps } from './dialogues/MP2';
 import { PLDefaultProps } from './dialogues/PL';
 import { SBDefaultProps } from './dialogues/SB';
 import { Dialogue, defaultDialogueProps } from './dialogues/dialogue';
@@ -38,7 +39,8 @@ export const create = <T, D = Partial<T>, N = Partial<T>>(
 export const factory = {
 	DM: create<Dialogue>(defaultDialogueProps, DMDefaultProps),
 	PL: create<Dialogue>(defaultDialogueProps, PLDefaultProps),
-	MP: create<Dialogue>(defaultDialogueProps, MPDefaultProps),
+	MP1: create<Dialogue>(defaultDialogueProps, MP1DefaultProps),
+	MP2: create<Dialogue>(defaultDialogueProps, MP2DefaultProps),
 	SB: create<Dialogue>(defaultDialogueProps, SBDefaultProps),
 	GZ: create<Dialogue>(defaultDialogueProps, GZDefaultProps),
 	Entity: create<Entity>(defaultEntityProps),

@@ -152,6 +152,10 @@ main.show:not([data-view='intro']) {
 	width: 100%;
 	text-align: center;
 	font-size: min(97vh * 0.06, 6vw);
+	margin: 1rem 0;
+}
+.main-menu > :is(h1, h2, h3, h4, h5, h6) {
+	user-select: none;
 }
 
 .main-menu > input {
@@ -165,6 +169,7 @@ main.show:not([data-view='intro']) {
 	background: var(--clr-foreground);
 	color: var(--clr-text);
 	font-size: 1.5rem;
+	cursor: text;
 	/* text-align: center; */
 }
 
@@ -184,6 +189,7 @@ main.show:not([data-view='intro']) {
 	color: var(--clr-accent);
 	opacity: 0;
 	cursor: default;
+	user-select: none;
 	transition: opacity 1000ms ease-in-out;
 	/* text-align: center; */
 }
@@ -213,6 +219,7 @@ main.show:not([data-view='intro']) {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-end;
+	z-index: -1;
 }
 
 .backdrop {
@@ -223,9 +230,11 @@ main.show:not([data-view='intro']) {
 	left: 0;
 	right: 0;
 	/* bottom: 0; */
-	z-index: -1;
-	background: var(--clr-foreground);
-	background-size: cover;
+	z-index:-1;
+	/* background: var(--clr-foreground); */
+	background: url(/public/icons/icon_bg.png) no-repeat;
+	background-size: 110% 102%;
+	/* background-size: cover; */
 	transition: background 500ms var(--trans-bounce);
 }
 .backdrop.show {
@@ -291,14 +300,15 @@ section.left > .portrait-wrapper > svg {
 }
 
 .portrait {
-	height: 100%;
-	max-height: 100%;
+	/* height: 100%; */
+	/* max-height: 100%; */
 	position: absolute;
 	bottom: 100%;
 	left: 0;
 	right: 0;
 	z-index: -1;
-	background-size: cover;
+	background-size: contain;
+	background-position-y: bottom;
 	transition: bottom 500ms var(--trans-bounce),
 		opacity 350ms var(--trans-bounce);
 }
@@ -324,6 +334,7 @@ section.left > .portrait-wrapper > svg {
 	height: fit-content;
 	flex: 1;
 	align-items: center;
+	z-index: -1;
 }
 
 .wrapper {
@@ -417,7 +428,10 @@ section.left > .portrait-wrapper > svg {
 	min-height: 100px;
 	padding: 0.75rem 1rem;
 	border-radius: var(--br-secondary);
-	background: var(--clr-foreground);
+	/* background: var(--clr-foreground); */
+	background: url(/public/icons/icon_bg.png) no-repeat;
+	background-size: 110% 102%;
+	background-position-x: 50%;
 	text-align: center;
 	cursor: pointer;
 	user-select: none;
@@ -597,13 +611,95 @@ section.left > .portrait-wrapper > svg {
 .dock {
 	--vr-width: 3px;
 	width: 100%;
-	height: 30%;
+	height: 10%;
 	z-index: 10;
-	overflow-y: auto;
+	position: relative;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	background: var(--clr-background);
+	transition: min-height 1000ms linear;
+}
+
+.dock-spacer {
+	width: calc(25% - 0.2rem);
+	background: var(--clr-foreground);
+	background: url(/public/icons/icon_bg.png) no-repeat;
+	background-size: 100% 110%;
+}
+.dock-spacer:nth-child(1) {
+	border-top-right-radius: var(--br-secondary);
+	margin-right: 0.2rem;
+}
+.dock-spacer:nth-last-child(1) {
+	border-top-left-radius: var(--br-secondary);
+}
+
+.special .dock-spacer:nth-child(1) {
+	border-top-left-radius: var(--br-primary);
+}
+.special .dock-spacer:nth-last-child(1) {
+	border-top-right-radius: var(--br-primary);
+}
+
+.options-container {
+	width: 50%;
+	position: absolute;
+	top: -1.55rem;
+	left: 25%;
+	bottom: 0;
+	z-index: 1000;
+	/* background: var(--clr-foreground); */
+	background: url(/public/icons/icon_bg.png) no-repeat;
+	background-size: 110% 102%;
+	background-position-x: 50%;
+	border-top-left-radius: var(--br-primary);
+	border-top-right-radius: var(--br-primary);
+	padding-top: 0.2rem;
+}
+
+.options-cover {
+	height: 100%;
+	width: 100%;
+	top: 0;
+	position: absolute;
+	background-color: var(--clr-background);
+	transition: height 1500ms var(--trans-bounce);
+}
+.options-cover.open {
+	height: 0;
+}
+
+.options {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 0 0.4rem;
+}
+.options :nth-child(1) {
+	border-top-left-radius: var(--br-secondary);
+	border-top-right-radius: var(--br-secondary);
+}
+
+.option {
+	width: 100%;
+	height: 2rem;
+	margin: 0.2rem;
+	padding: 0.5rem;
+	/* border-radius: 5px; */
+	/* display: inline-block; */
+	background: var(--clr-background);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	/* flex-direction: column; */
+	/* justify-content: center; */
+	/* align-items: center; */
+	cursor: pointer;
 }
 
 .dock-item {

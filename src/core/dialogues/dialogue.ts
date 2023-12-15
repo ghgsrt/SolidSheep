@@ -3,7 +3,7 @@ import { EnsureFnParamTyping, OmitDefaults } from '../../types/utils';
 import { EntityID } from '../entities/entity';
 import { DMDialogueName } from './DM';
 import { GZDialogueName } from './GZ';
-import { MPDialogueName } from './MP';
+import { MP1DialogueName } from './MP1';
 import { PLDialogueName } from './PL';
 import { SBDialogueName } from './SB';
 
@@ -21,7 +21,6 @@ export type Dialogue = {
 
 export const defaultDialogueProps = {
 	bgImage: '',
-	// entity: 'DM',
 	portrait: '',
 	portraitName: '',
 	speaker: '',
@@ -35,6 +34,7 @@ export type ReqDialogueProps = OmitDefaults<
 	keyof typeof defaultDialogueProps
 >;
 
+//? validate and generate typings for the dialogue object
 export const createDialogue = <D extends string, P extends Partial<Dialogue>>(
 	defProps: P,
 	dialogues: Record<
@@ -52,8 +52,10 @@ export type GetDialogue<T extends EntityID> = T extends 'DM'
 	? DMDialogueName
 	: T extends 'PL'
 	? PLDialogueName
-	: T extends 'MP'
-	? MPDialogueName
+	: T extends 'MP1'
+	? MP1DialogueName
+	: T extends 'MP2'
+	? MP1DialogueName
 	: T extends 'SB'
 	? SBDialogueName
 	: T extends 'GZ'

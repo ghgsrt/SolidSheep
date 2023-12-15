@@ -17,11 +17,12 @@ export const [PLDefaultProps, PLDialogues] = createDialogue(
 	{
 		takesScroll: {
 			text: ['<em>You take the scroll</em>'],
-			onStart: ({ toggleFlag, pushInventoryItem }) => {
+			onStart: ({ setBGImage, toggleFlag, pushInventoryItem }) => {
+				setBGImage('took_scroll.png');
 				toggleFlag('hasSwA', true);
 				pushInventoryItem('scrollOfSPA');
 			},
-			onEnd: ({ queueDialogue }) => queueDialogue('MP', 'playerTakesScroll'),
+			onEnd: ({ queueDialogue }) => queueDialogue('MP1', 'playerTakesScroll'),
 		},
 		explainsScroll: {
 			text: [''], // branches
@@ -43,8 +44,8 @@ export const [PLDefaultProps, PLDialogues] = createDialogue(
 			],
 			onEnd: ({ setOptions, runDialogue }) => {
 				setOptions({
-					examine: { scroll: () => runDialogue('DM', 'playerExaminesScroll') },
-					use: { scroll: () => runDialogue('DM', 'playerUsesScroll') },
+					'Examine the scroll': () => runDialogue('DM', 'playerExaminesScroll'),
+					'Use the scroll': () => runDialogue('DM', 'playerUsesScroll'),
 				});
 			},
 		},

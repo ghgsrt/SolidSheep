@@ -13,7 +13,7 @@ import { produce } from 'solid-js/store';
 import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
 import { entityLUT, itemLUT, speakerLUT } from '../core/LUTs';
 import { Entity, EntityID } from '../core/entities/entity';
-import promptParser from '../core/parser';
+// import promptParser from '../core/parser';
 import { useView } from './View';
 
 type DialogueLookupFn<R = void> = <
@@ -34,7 +34,7 @@ type EntityOrDialogueFn<R = void> = (item: Entity | Dialogue) => Promise<R>;
 
 export type ControllerFns = {
 	state: State;
-	prompt: (prompt: string) => void;
+	// prompt: (prompt: string) => void;
 	toggleFlag: (flag: Flag, set?: boolean) => void;
 	queueDialogue: DialogueLookupFn;
 	runDialogue: DialogueLookupFn;
@@ -70,23 +70,23 @@ const ControllerProvider: Component<Props> = (props) => {
 
 	createEffect(() => (entityLUT.PL!.name = state.playerName));
 
-	const prompt: ControllerFns['prompt'] = (prompt) => {
-		if (!prompt) return;
+	// const prompt: ControllerFns['prompt'] = (prompt) => {
+	// 	if (!prompt) return;
 
-		const err = promptParser(prompt);
+	// 	const err = promptParser(prompt);
 
-		batch(() => {
-			setState('history', (history) => [
-				...history,
-				{ name: '', text: prompt },
-			]);
-			if (err)
-				setState('history', (history) => [
-					...history,
-					{ name: 'DM', text: err },
-				]);
-		});
-	};
+	// 	batch(() => {
+	// 		setState('history', (history) => [
+	// 			...history,
+	// 			{ name: '', text: prompt },
+	// 		]);
+	// 		if (err)
+	// 			setState('history', (history) => [
+	// 				...history,
+	// 				{ name: 'DM', text: err },
+	// 			]);
+	// 	});
+	// };
 
 	const updateDialogue = (dialogue: Dialogue) => {
 		setCurrDialogue(dialogue);
@@ -112,9 +112,9 @@ const ControllerProvider: Component<Props> = (props) => {
 	const _runDialogue = async (
 		speaker: EntityID,
 		dialogue: GetDialogue<EntityID>,
-		onNextClick = true
+		queue = true
 	) => {
-		if (onNextClick) {
+		if (queue) {
 			dialogueQueue.push([speaker, dialogue]);
 			return;
 		}
@@ -228,9 +228,9 @@ const ControllerProvider: Component<Props> = (props) => {
 		speaker,
 		dialogue
 	) => {
-		let portraitName: string;
-		if (!dialogue) portraitName = entityLUT[speaker]!.name;
-		else portraitName = speakerLUT[speaker][dialogue]!.portraitName;
+		let portraitName =
+			//@ts-ignore
+			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
 
 		if (!portraitName) return;
 
@@ -248,9 +248,9 @@ const ControllerProvider: Component<Props> = (props) => {
 		speaker,
 		dialogue
 	) => {
-		let portraitName: string;
-		if (!dialogue) portraitName = entityLUT[speaker]!.name;
-		else portraitName = speakerLUT[speaker][dialogue]!.portraitName;
+		let portraitName =
+			//@ts-ignore
+			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
 
 		if (!portraitName) return;
 
@@ -268,9 +268,9 @@ const ControllerProvider: Component<Props> = (props) => {
 		speaker,
 		dialogue
 	) => {
-		let portraitName: string;
-		if (!dialogue) portraitName = entityLUT[speaker]!.name;
-		else portraitName = speakerLUT[speaker][dialogue]!.portraitName;
+		let portraitName =
+			//@ts-ignore
+			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
 
 		if (!portraitName) return;
 
@@ -344,7 +344,7 @@ const ControllerProvider: Component<Props> = (props) => {
 
 	const context: ControllerFns = {
 		state,
-		prompt,
+		// prompt,
 		toggleFlag,
 		runDialogue,
 		queueDialogue,

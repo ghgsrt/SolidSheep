@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import Dialogue from './Dialogue';
 import NameBar from './NameBar';
-import TabBar from './TabBar';
+// import TabBar from './TabBar';
 import { state } from '../../contexts/SessionState';
 
 type props = {};
@@ -24,19 +24,9 @@ const Middle: Component<props> = () => {
 							state.playerName === state.rightPortraitName)
 					}
 				/>
-				<div
-					class='wrapper'
-					// style={{
-					// 	'border-top-left-radius': `${
-					// 		state.leftPortraitName ? '0' : '20px'
-					// 	}`,
-					// 	'border-top-right-radius': `${
-					// 		state.rightPortraitName ? '0' : '20px'
-					// 	}`,
-					// }}
-				>
+				<div class='wrapper'>
 					<Dialogue />
-					<TabBar />
+					{/* <TabBar /> */}
 				</div>
 			</section>
 		</>

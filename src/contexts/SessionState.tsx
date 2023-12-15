@@ -2,7 +2,8 @@ import { createStore } from 'solid-js/store';
 import { Item } from '../core/items/item';
 
 export type StoryOption = () => void;
-export type StoryOptions = Record<string, Record<string, StoryOption>>;
+export type StoryOptions = Record<string, StoryOption>;
+// export type StoryOptions = Record<string, Record<string, StoryOption>>;
 
 export type Flag =
 	| 'canGetSwA'

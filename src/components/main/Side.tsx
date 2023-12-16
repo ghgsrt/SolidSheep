@@ -1,4 +1,4 @@
-import { Component, createEffect } from 'solid-js';
+import { Component } from 'solid-js';
 import Inventory from './Inventory';
 import Portrait from './Portrait';
 import { state } from '../../contexts/SessionState';

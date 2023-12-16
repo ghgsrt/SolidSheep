@@ -6,6 +6,7 @@ import { GZDialogueName } from './GZ';
 import { MP1DialogueName } from './MP1';
 import { PLDialogueName } from './PL';
 import { SBDialogueName } from './SB';
+import { MP2DialogueName } from './MP2';
 
 export type Dialogue<E extends EntityID = EntityID> = {
 	id: GetDialogue<E>;
@@ -60,7 +61,7 @@ export type GetDialogue<T extends EntityID> = T extends 'DM'
 	: T extends 'MP1'
 	? MP1DialogueName
 	: T extends 'MP2'
-	? MP1DialogueName
+	? MP2DialogueName
 	: T extends 'SB'
 	? SBDialogueName
 	: T extends 'GZ'

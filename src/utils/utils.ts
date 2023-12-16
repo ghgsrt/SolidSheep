@@ -65,3 +65,12 @@ export const descendingLen = <T extends { length: number }>(a: T, b: T) =>
 
 export const getRandomElement = <T>(arr: T[]) =>
 	arr[Math.floor(Math.random() * arr.length)];
+
+const imgs: HTMLImageElement[] = [];
+export function preloadImages(urls: string[]) {
+	for (const url of urls) {
+		const img = new Image();
+		img.src = url;
+		imgs.push(img);
+	}
+}

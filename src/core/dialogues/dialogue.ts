@@ -16,15 +16,15 @@ export type Dialogue<E extends EntityID = EntityID> = {
 	portrait: string;
 	portraitName: string;
 	speaker?: EntityID;
-	onStart: (fns: ControllerFns) => void;
-	onEnd: (fns: ControllerFns) => void;
-	beforeNext: (fns: ControllerFns) => Promise<void>;
+	onStart: (fns: ControllerFns) => Promise<void> | void;
+	onEnd: (fns: ControllerFns) => Promise<void> | void;
+	beforeNext: (fns: ControllerFns) => Promise<void> | void;
 };
 
 export const defaultDialogueProps = {
 	bgImage: '',
-	onStart: () => {},
-	onEnd: () => {},
+	onStart: undefined,
+	onEnd: undefined,
 	beforeNext: undefined,
 } as const satisfies Partial<Dialogue<any>>;
 

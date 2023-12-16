@@ -97,9 +97,11 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 		},
 		__placeholder: {
 			text: ['🤡 To be continued... 🤡'],
-			onEnd: ({ view, setOptions }) => {
+			onEnd: async ({ view, setOptions, clearPortraits }) => {
 				setOptions({});
-				view.updateView('outro', { preSleepMS: 2000, broadcastPending: false });
+				await view.updateView('outro', { preSleepMS: 2000, broadcastPending: false });
+				setOptions(undefined);
+				clearPortraits();
 			},
 		},
 	}

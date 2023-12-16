@@ -11,9 +11,9 @@ const MainMenu: Component<props> = () => {
 	return (
 		<>
 			<div class='main-menu'>
-				<h3>Based on</h3>
+				<h3>A Game Based on</h3>
 				<h1>The Wild Sheep Chase</h1>
-				<h3>A DnD One-Shot</h3>
+				<h3>DnD One-Shot</h3>
 				<div
 					class='button'
 					onClick={() => view.updateView('character-create', { sleepMS: 1000 })}

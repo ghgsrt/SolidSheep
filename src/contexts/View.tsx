@@ -30,7 +30,7 @@ export type ViewValues = {
 			sleepMS?: number;
 			broadcastPending?: boolean;
 		}
-	) => void;
+	) => Promise<void>;
 	dockView: Accessor<DockView>;
 	setDockView: Setter<DockView>;
 	optionsHeightTarget: Accessor<number>;

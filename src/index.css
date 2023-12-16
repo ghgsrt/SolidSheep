@@ -119,10 +119,10 @@ main {
 	align-items: center;
 	z-index: 0;
 	opacity: 1;
-	transition: opacity 1000ms ease-in-out !important;
+	transition: opacity 900ms ease-in-out;
 }
 main.pending {
-	transition: opacity 1000ms ease-in-out !important;
+	transition: opacity 1000ms ease-in-out;
 	opacity: 0;
 }
 main.show {
@@ -193,19 +193,6 @@ main.show[data-view='main'] {
 	z-index: 100;
 }
 
-.character-create .wrapper {
-	width: 100%;
-	height: calc(20% + 2rem);
-	/* margin-top: 2rem; */
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: center;
-	z-index: 100;
-	overflow: hidden;
-	/* background-color: blue; */
-}
-
 .character-create input {
 	width: 50%;
 	height: 3rem;
@@ -241,6 +228,31 @@ main.show[data-view='main'] {
 	z-index: 100;
 }
 
+.character-create .wrapper {
+	width: 100%;
+	height: calc(20% + 2rem);
+	/* margin-top: 2rem; */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	z-index: 100;
+	overflow: hidden;
+	/* background-color: blue; */
+}
+
+.characters .wrapper {
+	width: 30vh;
+	height: 100%;
+	position: relative;
+	background: transparent;
+	border-radius: var(--br-primary);
+	/* display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center; */
+}
+
 .character {
 	width: 100%;
 	height: 100%;
@@ -256,16 +268,7 @@ main.show[data-view='main'] {
 
 	/* z-index: -3; */
 }
-.characters .wrapper {
-	width: 30vh;
-	height: 100%;
-	position: relative;
-	background: transparent;
-	/* display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	align-items: center; */
-}
+
 .character-bg {
 	content: '';
 	width: 100%;
@@ -786,8 +789,8 @@ section.left > .portrait-wrapper > svg {
 	left: 25%;
 	bottom: 0;
 	z-index: 1000;
-	/* background: var(--clr-foreground); */
-	background: url(/public/icons/icon_bg.png) no-repeat;
+	background: var(--clr-foreground);
+	/* background: url(/public/icons/icon_bg.png) no-repeat; */
 	background-size: 110% 102%;
 	background-position-x: 50%;
 	border-top-left-radius: var(--br-primary);
@@ -802,6 +805,7 @@ section.left > .portrait-wrapper > svg {
 	width: 100%;
 	top: 0;
 	position: absolute;
+	z-index: 100;
 	background-color: var(--clr-background);
 	transition: height 1500ms var(--trans-bounce);
 }
@@ -816,6 +820,7 @@ section.left > .portrait-wrapper > svg {
 	justify-content: flex-start;
 	align-items: center;
 	margin: 0 0.4rem;
+	z-index: 20;
 }
 .options :nth-child(1) {
 	border-top-left-radius: var(--br-secondary);
@@ -837,6 +842,7 @@ section.left > .portrait-wrapper > svg {
 	justify-content: center;
 	align-items: center;
 	user-select: none;
+	z-index: 5;
 	/* flex-direction: column; */
 	/* justify-content: center; */
 	/* align-items: center; */

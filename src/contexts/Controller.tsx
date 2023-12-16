@@ -41,7 +41,7 @@ export type ControllerFns = {
 	continueDialogue: () => void;
 	addJournalEntry: (entry: string) => void;
 	setBGImage: (image: string) => void;
-	setOptions: (options: StoryOptions) => void;
+	setOptions: (options?: StoryOptions) => void;
 	// setDialogue: State['setDialogue'];
 	updatePortrait: Async<ExtendFirstParam<State['updatePortrait'], EntityID>>;
 	clearPortrait: Async<ExtendFirstParam<State['clearPortrait'], EntityID>>;
@@ -172,7 +172,7 @@ const ControllerProvider: Component<Props> = (props) => {
 		setState(produce((state) => (state[flag] = set ?? !state[flag])));
 	const setBGImage = (image?: string) =>
 		setState('bgImage', (prev) => image || prev);
-	const setOptions = (options: StoryOptions) => setState('options', options);
+	const setOptions = (options?: StoryOptions) => setState('options', options);
 	const addJournalEntry = (entry: string) =>
 		setState('journal', (journal) => [...journal, entry]);
 

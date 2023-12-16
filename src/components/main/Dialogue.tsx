@@ -5,11 +5,27 @@ import useEventListener from '../../hooks/useEventListener';
 
 type props = {};
 
+let dialogue: HTMLDivElement;
+let dialogueClone: HTMLDivElement;
 const Dialogue: Component<props> = () => {
 	const [timeoutID, setTimeoutID] = createSignal(0);
 	const [showBlinker, setShowBlinker] = createSignal(false);
 	const [text, setText] = createSignal('');
 	const controller = useController()!;
+
+	const resize = () => {
+		setTimeout(() => {
+			const width = parseFloat(window.getComputedStyle(dialogue).width);
+			const cloneWidth = parseFloat(
+				window.getComputedStyle(dialogueClone).width
+			);
+			const padding = parseFloat(window.getComputedStyle(dialogue).paddingLeft);
+			// const width = dialogue.offsetWidth;
+			// const cloneWidth = dialogueClone.offsetWidth;
+			console.log(width, cloneWidth);
+			dialogue.style.width = `${cloneWidth + padding * 2}px`;
+		}, 0);
+	};
 
 	const continueDialogue = () => {
 		if (text().length < state.dialogue.length) {
@@ -23,6 +39,7 @@ const Dialogue: Component<props> = () => {
 		if (!state.options) {
 			setText('');
 			controller.continueDialogue();
+			resize();
 		}
 	};
 
@@ -36,6 +53,7 @@ const Dialogue: Component<props> = () => {
 		const _force_watch = state.dialogue;
 
 		setText('');
+		resize();
 
 		const stepFn = (timestamp: number) => {
 			if (!start) start = timestamp;
@@ -77,6 +95,7 @@ const Dialogue: Component<props> = () => {
 
 	onMount(() => {
 		controller.runDialogue('DM', 'intro');
+		resize();
 		console.log(state.dialogue);
 
 		useEventListener('keydown', (e) => {
@@ -90,18 +109,25 @@ const Dialogue: Component<props> = () => {
 
 	return (
 		<>
-			<div class='dialogue-container'>
+			<div class='dialogue-container' onClick={continueDialogue}>
 				{!state.options && (
 					<Show when={showBlinker()}>
 						<div class='dialogue-blinker' />
 					</Show>
 				)}
+				<div class='dialogue-text-bg'></div>
 				<div
+					ref={dialogue}
 					class={`dialogue-text ${state.activeSpeaker} ${
 						state.options && 'waiting'
 					}`}
-					onClick={continueDialogue}
 					innerHTML={text()}
+				></div>
+				<div
+					ref={dialogueClone}
+					class={`dialogue-text clone`}
+					// onClick={continueDialogue}
+					innerHTML={state.dialogue}
 				></div>
 				{/* <div class='typewriter'>
 					<For each={Array.from({ length: length() }, () => 0)}>

@@ -46,7 +46,7 @@ const Stage: Component<props> = () => {
 						show() ? 'show' : ''
 					}`}
 					style={{
-						'background-image': `url(/backgrounds/${state.bgImage})`,
+						'background': `url(/backgrounds/${state.bgImage}) center center / cover no-repeat`,
 					}}
 				></div>
 				<Side left />

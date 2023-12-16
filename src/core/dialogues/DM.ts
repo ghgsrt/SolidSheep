@@ -8,7 +8,8 @@ export const DMDialogueNames = [
 	'sheepWavesScroll',
 	'playerExaminesScroll',
 	'playerUsesScroll',
-	'gruzAppears',
+	'gruzAppears_1',
+	'gruzAppears_2',
 	'gruzGrabsSheep',
 	'__placeholder',
 ] as const;
@@ -40,23 +41,9 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 			onEnd: ({ toggleFlag, setOptions, runDialogue }) => {
 				toggleFlag('canGetSwA');
 
-				// setOptions({
-				// 	AAAAAAAAAAAAAA: () => {},
-				// 	BBBBBBBBBBBBBB: () => {},
-				// 	CCCCCCCCCCCCCC: () => {},
-				// 	DDDDDDDDDDDDDD: () => {},
-				// 	EEEEEEEEEEEEEE: () => {},
-				// 	FFFFFFFFFFFFFF: () => {},
-				// });
 				setOptions({
 					"Take the scroll from the sheep's mouth": () =>
 						runDialogue('PL', 'takesScroll'),
-											AAAAAAAAAAAAAA: () => {},
-					BBBBBBBBBBBBBB: () => {},
-					CCCCCCCCCCCCCC: () => {},
-					DDDDDDDDDDDDDD: () => {},
-					EEEEEEEEEEEEEE: () => {},
-					FFFFFFFFFFFFFF: () => {},
 				});
 			},
 		},
@@ -86,13 +73,19 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 			},
 			beforeNext: async ({ clearPortraits }) => await clearPortraits(),
 		},
-		gruzAppears: {
+		gruzAppears_1: {
 			text: [
 				'A loud howling fills the air, accompanied by the sound of angry yells and the occasional scream that seem to be drawing closer and closer.',
+			],
+			onEnd: ({ queueDialogue }) => queueDialogue('DM', 'gruzAppears_2'),
+		},
+		gruzAppears_2: {
+			text: [
 				'The cause quickly becomes apparent as a huge Half-Orc swaggers towards you, pushing his way through the crowd without a care for anybody standing in his way',
 				'Walking in front of him appear to be large wolves wearing iron collars, while a hulking figure in a dirty brown cloak travels in his wake with footfalls loud enough to be heard over the ruckus.',
 				'The Half-Orc sets his small eyes on you and strides forward with one hand resting on the hilt of a greatsword.',
 			],
+			bgImage: 'gruz_appears.png',
 			onEnd: ({ queueDialogue }) => queueDialogue('GZ', 'intro'),
 		},
 		gruzGrabsSheep: {
@@ -103,8 +96,11 @@ export const [DMDefaultProps, DMDialogues] = createDialogue(
 			onEnd: ({ queueDialogue }) => queueDialogue('GZ', 'takingSheep'),
 		},
 		__placeholder: {
-			text: ['🤡 PLACEHOLDER 🤡'],
-			onEnd: ({ setOptions }) => setOptions({}),
+			text: ['🤡 To be continued... 🤡'],
+			onEnd: ({ view, setOptions }) => {
+				setOptions({});
+				view.updateView('outro', { preSleepMS: 2000, broadcastPending: false });
+			},
 		},
 	}
 );

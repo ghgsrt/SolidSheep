@@ -12,7 +12,7 @@ import {
 import useEventListener from '../hooks/useEventListener';
 import { sleep } from '../utils/utils';
 
-export type View = 'main' | 'intro' | 'outro';
+export type View = 'intro' | 'character-create' | 'main' | 'outro';
 export type DockView = 'prompt' | 'combat' | 'journal' | 'notebook';
 
 type Props = {
@@ -23,7 +23,14 @@ export type ViewValues = {
 	currView: Accessor<View>;
 	setCurrView: Setter<View>;
 	pending: Accessor<boolean>;
-	updateView: (view: View) => void;
+	updateView: (
+		view: View,
+		options?: {
+			preSleepMS?: number;
+			sleepMS?: number;
+			broadcastPending?: boolean;
+		}
+	) => void;
 	dockView: Accessor<DockView>;
 	setDockView: Setter<DockView>;
 	optionsHeightTarget: Accessor<number>;
@@ -54,12 +61,21 @@ const ViewContext = createContext<ViewValues>();
 const ViewProvider: Component<Props> = (props) => {
 	const [currView, setCurrView] = createSignal<View>('intro');
 	const [pending, setPending] = createSignal(false);
-
-	const updateView = async (view: View) => {
-		setPending(true);
-		await sleep(2000);
+	const updateView = async (
+		view: View,
+		options?: {
+			preSleepMS?: number;
+			sleepMS?: number;
+			broadcastPending?: boolean;
+		}
+	) => {
+		if (options?.preSleepMS) await sleep(options.preSleepMS);
+		if (options?.broadcastPending ?? true) setPending(true);
+		else document.querySelector('main')!.classList.add('pending');
+		await sleep(options?.sleepMS ?? 2000);
 		setCurrView(view);
-		setPending(false);
+		if (options?.broadcastPending ?? true) setPending(false);
+		else document.querySelector('main')!.classList.remove('pending');
 	};
 
 	const [dockView, setDockView] = createSignal<DockView>('prompt');
@@ -79,53 +95,28 @@ const ViewProvider: Component<Props> = (props) => {
 	const sleepMS = 500;
 
 	async function hide(side?: 'left' | 'right', spec?: 'image' | 'name') {
-		if (!side) {
-			batch(() => {
-				setHideLeftImage(true);
-				setHideLeftName(true);
-				setHideRightImage(true);
-				setHideRightName(true);
-			});
+		const hideImage = !spec || spec === 'image';
+		const hideName = !spec || spec === 'name';
 
-			await sleep(sleepMS);
+		batch(() => {
+			if (!side || side === 'left') {
+				if (hideImage) setHideLeftImage(true);
+				if (hideName) setHideLeftName(true);
+			}
+			if (!side || side === 'right') {
+				if (hideImage) setHideRightImage(true);
+				if (hideName) setHideRightName(true);
+			}
+		});
 
-			batch(() => {
-				setHideLeftImage(false);
-				setHideLeftName(false);
-				setHideRightImage(false);
-				setHideRightName(false);
-			});
-		} else if (side === 'left') {
-			if (!spec) {
-				batch(() => {
-					setHideLeftImage(true);
-					setHideLeftName(true);
-				});
-			} else if (spec === 'image') setHideLeftImage(true);
-			else setHideLeftName(true);
+		await sleep(sleepMS);
 
-			await sleep(sleepMS);
-
-			batch(() => {
-				setHideLeftImage(false);
-				setHideLeftName(false);
-			});
-		} else {
-			if (!spec) {
-				batch(() => {
-					setHideRightImage(true);
-					setHideRightName(true);
-				});
-			} else if (spec === 'image') setHideRightImage(true);
-			else setHideRightName(true);
-
-			await sleep(sleepMS);
-
-			batch(() => {
-				setHideRightImage(false);
-				setHideRightName(false);
-			});
-		}
+		batch(() => {
+			setHideLeftImage(false);
+			setHideLeftName(false);
+			setHideRightImage(false);
+			setHideRightName(false);
+		});
 	}
 
 	const _runOnResize: (() => void)[] = [];

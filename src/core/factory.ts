@@ -6,7 +6,7 @@ import { MP2DefaultProps } from './dialogues/MP2';
 import { PLDefaultProps } from './dialogues/PL';
 import { SBDefaultProps } from './dialogues/SB';
 import { Dialogue, defaultDialogueProps } from './dialogues/dialogue';
-import { Entity, defaultEntityProps } from './entities/entity';
+import { Entity, defaultEntityProps } from './dialogues/entities/entity';
 import {
 	Armor,
 	Item,
@@ -20,29 +20,35 @@ export const create = <T, D = Partial<T>, N = Partial<T>>(
 	defaultProps?: D,
 	narrowProps?: N
 ) => {
-	const fns: Record<string, any> = {};
+	// const fns: Record<string, any> = {};
 
-	for (const key in defaultProps)
-		if (typeof defaultProps[key] === 'function') fns[key] = defaultProps[key];
+	// for (const key in defaultProps)
+	// 	if (typeof defaultProps[key] === 'function') fns[key] = defaultProps[key];
 
-	return (props: Omit<T, keyof D>) => {
+	return (id: string, props: Omit<T, keyof D>) => {
+		const fns: Record<string, any> = {};
+
+		for (const key in props)
+		//@ts-ignore
+			if (typeof props[key] === 'function') fns[key] = props[key];
 		return {
+			id,
 			...fns,
 			...deepMerge(
 				deepMerge(deepCopy(defaultProps ?? {}), deepCopy(narrowProps ?? {})),
-				props
+				deepCopy(props)
 			),
 		} as T;
 	};
 };
 
 export const factory = {
-	DM: create<Dialogue>(defaultDialogueProps, DMDefaultProps),
-	PL: create<Dialogue>(defaultDialogueProps, PLDefaultProps),
-	MP1: create<Dialogue>(defaultDialogueProps, MP1DefaultProps),
-	MP2: create<Dialogue>(defaultDialogueProps, MP2DefaultProps),
-	SB: create<Dialogue>(defaultDialogueProps, SBDefaultProps),
-	GZ: create<Dialogue>(defaultDialogueProps, GZDefaultProps),
+	DM: create<Dialogue<'DM'>>(defaultDialogueProps, DMDefaultProps),
+	PL: create<Dialogue<'PL'>>(defaultDialogueProps, PLDefaultProps),
+	MP1: create<Dialogue<'MP1'>>(defaultDialogueProps, MP1DefaultProps),
+	MP2: create<Dialogue<'MP2'>>(defaultDialogueProps, MP2DefaultProps),
+	SB: create<Dialogue<'SB'>>(defaultDialogueProps, SBDefaultProps),
+	GZ: create<Dialogue<'GZ'>>(defaultDialogueProps, GZDefaultProps),
 	Entity: create<Entity>(defaultEntityProps),
 	Item: create<Item>(defaultItemProps),
 	Weapon: create<Weapon>(defaultItemProps, defaultWeaponProps),

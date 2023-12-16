@@ -1,20 +1,20 @@
 import {
-	createSignal,
 	createContext,
 	Component,
 	useContext,
+	onMount,
 	batch,
-	createEffect,
+	createMemo,
 } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import { Flag, State, StoryOptions, state, setState } from './SessionState';
 import { ItemID } from '../core/items/item';
 import { produce } from 'solid-js/store';
 import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
-import { entityLUT, itemLUT, speakerLUT } from '../core/LUTs';
-import { Entity, EntityID } from '../core/entities/entity';
-// import promptParser from '../core/parser';
-import { useView } from './View';
+import { itemLUT, speakerLUT } from '../core/LUTs';
+import { EntityID } from '../core/dialogues/entities/entity';
+import { ViewValues, useView } from './View';
+import { Tail } from '../types/utils';
 
 type DialogueLookupFn<R = void> = <
 	T extends EntityID,
@@ -23,33 +23,29 @@ type DialogueLookupFn<R = void> = <
 	speaker: T,
 	dialogue: N
 ) => R;
-type EntityOrDialogueLookupFn<R = void> = <
-	T extends EntityID,
-	N extends GetDialogue<T>
->(
-	speaker: T,
-	dialogue?: N
-) => Promise<R>;
-type EntityOrDialogueFn<R = void> = (item: Entity | Dialogue) => Promise<R>;
+
+type ExtendFirstParam<T extends (...args: any[]) => any, E extends any> = (
+	...args: [Parameters<T>[0] | E, ...Tail<Parameters<T>>]
+) => ReturnType<T>;
+
+type Async<T extends (...args: any[]) => any> = (
+	...args: Parameters<T>
+) => Promise<ReturnType<T>>;
 
 export type ControllerFns = {
 	state: State;
-	// prompt: (prompt: string) => void;
+	view: ViewValues;
 	toggleFlag: (flag: Flag, set?: boolean) => void;
 	queueDialogue: DialogueLookupFn;
 	runDialogue: DialogueLookupFn;
 	continueDialogue: () => void;
-	updateStage: () => void;
 	addJournalEntry: (entry: string) => void;
 	setBGImage: (image: string) => void;
 	setOptions: (options: StoryOptions) => void;
-	setPortraitImage: (image: string, side?: 'left' | 'right') => Promise<void>;
-	setPortraitName: (name: string, side?: 'left' | 'right') => Promise<void>;
-	setPortrait: EntityOrDialogueFn;
-	clearPortraitImage: EntityOrDialogueLookupFn;
-	clearPortraitName: EntityOrDialogueLookupFn;
-	clearPortrait: EntityOrDialogueLookupFn;
-	clearPortraits: () => Promise<void>;
+	// setDialogue: State['setDialogue'];
+	updatePortrait: Async<ExtendFirstParam<State['updatePortrait'], EntityID>>;
+	clearPortrait: Async<ExtendFirstParam<State['clearPortrait'], EntityID>>;
+	clearPortraits: Async<State['clearPortraits']>;
 	pushInventoryItem: (itemID: ItemID) => void;
 	consumeInventoryItem: (itemID: ItemID) => void;
 	useInventoryItem: (itemID: ItemID) => void;
@@ -63,91 +59,113 @@ const ControllerContext = createContext<ControllerFns>();
 
 const ControllerProvider: Component<Props> = (props) => {
 	const view = useView()!;
-	const [currDialogue, setCurrDialogue] = createSignal<Dialogue | undefined>(
-		undefined
-	);
-	const [currIdx, setCurrIdx] = createSignal(0);
 
-	createEffect(() => (entityLUT.PL!.name = state.playerName));
+	onMount(() => {});
+	const active = createMemo(() => {
+		return (
+			state.DMDialogue ??
+			(state.activeSpeaker ===
+			(state.leftDialogue?.speaker || state.leftDialogue?.entity)
+				? state.leftDialogue
+				: state.activeSpeaker ===
+				  (state.rightDialogue?.speaker || state.rightDialogue?.entity)
+				? state.rightDialogue
+				: undefined)
+		);
+	});
+	const getSideOfEntity = (entity: EntityID) =>
+		state.leftDialogue?.entity === entity
+			? 'left'
+			: state.rightDialogue?.entity === entity
+			? 'right'
+			: undefined;
+	const updateIdx = (idx: number) => {
+		if (idx >= (active()?.text.length ?? 0) - 1) active()?.onEnd?.(context!);
 
-	// const prompt: ControllerFns['prompt'] = (prompt) => {
-	// 	if (!prompt) return;
-
-	// 	const err = promptParser(prompt);
-
-	// 	batch(() => {
-	// 		setState('history', (history) => [
-	// 			...history,
-	// 			{ name: '', text: prompt },
-	// 		]);
-	// 		if (err)
-	// 			setState('history', (history) => [
-	// 				...history,
-	// 				{ name: 'DM', text: err },
-	// 			]);
-	// 	});
-	// };
-
-	const updateDialogue = (dialogue: Dialogue) => {
-		setCurrDialogue(dialogue);
 		batch(() => {
-			setState('options', undefined);
-			setState(
-				'activeSpeaker',
-				dialogue?.speaker || entityLUT[dialogue?.entity]!.speaker
-			); //! change back to ?? after cleaning dialogue typings
-
-			if (dialogue) setPortrait(dialogue);
+			setState('dialogueIdx', idx);
+			setState('dialogue', active()?.text[idx] ?? '');
 		});
 	};
+	const setDialogue = async (dialogue: Dialogue, side?: 'left' | 'right') => {
+		const entitySide = getSideOfEntity(dialogue.entity);
+		side ??= entitySide ?? (!state.leftDialogue ? 'left' : 'right');
 
-	const updateIdx = (idx: number) => {
-		setCurrIdx(idx);
-		setState('dialogue', currDialogue()?.text[currIdx()] ?? '');
-		if (currIdx() === (currDialogue()?.text.length ?? 0) - 1)
-			currDialogue()?.onEnd?.(context);
+		if (dialogue.entity !== 'DM' && !entitySide && state[`${side}Dialogue`])
+			await view.hide(side);
+		// state.setDialogue(dialogue, side);
+		setState('DMDialogue', undefined);
+		batch(() => {
+			setState('activeSpeaker', dialogue.entity);
+			if (dialogue.entity === 'DM') {
+				setState('DMDialogue', undefined); //! prevent object merge
+				setState('DMDialogue', (_) => dialogue);
+			} else {
+				setState(`${side!}Dialogue`, undefined); //! prevent object merge
+				setState(`${side!}Dialogue`, (_) => dialogue);
+			}
+
+			// setState('activeDialogue', dialogue);
+		});
+
+		batch(() => {
+			updateIdx(0);
+			if (dialogue.bgImage) setState('bgImage', dialogue.bgImage);
+
+			setState(`_${side!}PortraitImage`, '');
+			setState(`_${side!}PortraitName`, '');
+		});
 	};
+	// const idxUpdate = () => {
+	// 	console.log(
+	// 		state.activeDialogue()?.portraitName,
+	// 		state.activeDialogue() &&
+	// 			entityLUT[state.activeDialogue()!.entity].portraitName
+	// 	);
 
-	let dialogueQueue: [EntityID, GetDialogue<EntityID>][] = [];
-	const _runDialogue = async (
-		speaker: EntityID,
-		dialogue: GetDialogue<EntityID>,
+	// };
+	let dialogueQueue: [EntityID, GetDialogue<EntityID>] | undefined;
+	const _runDialogue = async <E extends EntityID>(
+		speaker: E,
+		dialogue: GetDialogue<E>,
 		queue = true
 	) => {
+		console.log(queue, JSON.stringify(dialogueQueue), dialogue);
 		if (queue) {
-			dialogueQueue.push([speaker, dialogue]);
+			dialogueQueue = [speaker, dialogue];
+			console.log('queueing');
 			return;
 		}
 
-		if (currDialogue()?.beforeNext) await currDialogue()?.beforeNext?.(context);
+		if (active()?.beforeNext) {
+			console.log(active()?.id, active()?.beforeNext);
+			await active()?.beforeNext?.(context);
+		}
 
-		const item = speakerLUT[speaker][dialogue]! as Dialogue;
-		updateDialogue(item);
-		updateIdx(0);
-
+		//@ts-ignore typescript is dumb
+		const item = speakerLUT[speaker][dialogue];
+		console.log(item);
+		setDialogue(item);
+		// idxUpdate();
 		item.onStart?.(context);
-		updateStage();
 	};
 	const queueDialogue: ControllerFns['queueDialogue'] = (speaker, dialogue) =>
 		_runDialogue(speaker, dialogue);
 	const runDialogue: ControllerFns['runDialogue'] = (speaker, dialogue) =>
 		_runDialogue(speaker, dialogue, false);
 	const continueDialogue = () => {
-		if (dialogueQueue.length > 0) {
-			runDialogue(...dialogueQueue.shift()!);
+		if (dialogueQueue) {
+			console.log(JSON.stringify(dialogueQueue));
+			const temp: [EntityID, GetDialogue<EntityID>] = [...dialogueQueue];
+			dialogueQueue = undefined;
+			runDialogue(...temp);
 			return;
 		}
 
 		if (state.options) return;
-		updateIdx(currIdx() + 1);
-	};
-
-	const updateStage = () => {
-		const dialogue = currDialogue();
-		if (dialogue) {
-			setBGImage(dialogue?.bgImage);
-			setPortrait(dialogue);
-		}
+		// state.continueDialogue();
+		updateIdx(state.dialogueIdx + 1);
+		// idxUpdate();
 	};
 
 	const toggleFlag = (flag: Flag, set?: boolean) =>
@@ -158,147 +176,25 @@ const ControllerProvider: Component<Props> = (props) => {
 	const addJournalEntry = (entry: string) =>
 		setState('journal', (journal) => [...journal, entry]);
 
-	const setPortraitImage = async (image: string, side?: 'left' | 'right') => {
-		if (!side) {
-			if (!state.leftPortraitName) {
-				await view.hide('left', 'image');
-				setState('leftPortraitImage', image);
-			} else {
-				await view.hide('right', 'image');
-				setState('rightPortraitImage', image);
-			}
-		} else {
-			await view.hide(side, 'image');
-			setState(`${side}PortraitImage`, image);
-		}
-	};
-
-	const setPortraitName = async (name: string, side?: 'left' | 'right') => {
-		if (!side) {
-			if (!state.leftPortraitName) {
-				await view.hide('left', 'name');
-				setState('leftPortraitName', name);
-			} else {
-				await view.hide('right', 'name');
-				setState('rightPortraitName', name);
-			}
-		} else {
-			await view.hide(side, 'name');
-			setState(`${side}PortraitName`, name);
-		}
-	};
-
-	const setPortrait: ControllerFns['setPortrait'] = async (item) => {
-		let portrait: string;
-		let portraitName: string;
-		//@ts-ignore -- if not, then it's a dialogue not an entity
-		if (!item.id) {
-			const entity = entityLUT[(item as Dialogue).entity]!;
-			portrait = item?.portrait || entity.portrait;
-			portraitName = (item as Dialogue)?.portraitName || entity.name;
-		} else {
-			portrait = item.portrait;
-			portraitName = (item as Entity).name;
-		}
-
-		if (
-			!portrait ||
-			!portraitName ||
-			state.leftPortraitName === portraitName ||
-			state.rightPortraitName === portraitName ||
-			portraitName === 'Dungeon Master'
-		)
-			return;
-
-		if (!state.leftPortraitName) {
-			batch(() => {
-				setState('leftPortraitImage', portrait);
-				setState('leftPortraitName', portraitName);
-			});
-		} else {
-			if (state.rightPortraitName) await view.hide('right');
-
-			batch(() => {
-				setState('rightPortraitImage', portrait);
-				setState('rightPortraitName', portraitName);
-			});
-		}
-	};
-	const clearPortraitImage: ControllerFns['clearPortraitImage'] = async (
-		speaker,
-		dialogue
+	const updatePortrait: ControllerFns['updatePortrait'] = async (
+		side,
+		key,
+		value
 	) => {
-		let portraitName =
-			//@ts-ignore
-			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
+		if (side !== 'left' && side !== 'right') side = getSideOfEntity(side)!;
 
-		if (!portraitName) return;
-
-		if (state.leftPortraitName === portraitName) {
-			await view.hide('left', 'image');
-
-			setState('leftPortraitImage', '');
-		} else if (state.rightPortraitName === portraitName) {
-			await view.hide('right', 'image');
-
-			setState('rightPortraitImage', '');
-		}
+		await view.hide(side, key);
+		state.updatePortrait(side, key, value);
 	};
-	const clearPortraitName: ControllerFns['clearPortraitName'] = async (
-		speaker,
-		dialogue
-	) => {
-		let portraitName =
-			//@ts-ignore
-			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
+	const clearPortrait: ControllerFns['clearPortrait'] = async (side, key) => {
+		if (side !== 'left' && side !== 'right') side = getSideOfEntity(side)!;
 
-		if (!portraitName) return;
-
-		if (state.leftPortraitName === portraitName) {
-			await view.hide('left', 'name');
-
-			setState('leftPortraitName', '');
-		} else if (state.rightPortraitName === portraitName) {
-			await view.hide('right', 'name');
-
-			setState('rightPortraitName', '');
-		}
+		await view.hide(side, key);
+		state.clearPortrait(side, key);
 	};
-	const clearPortrait: ControllerFns['clearPortrait'] = async (
-		speaker,
-		dialogue
-	) => {
-		let portraitName =
-			//@ts-ignore
-			speakerLUT[speaker][dialogue]?.portraitName || entityLUT[speaker]!.name;
-
-		if (!portraitName) return;
-
-		if (state.leftPortraitName === portraitName) {
-			await view.hide('left');
-
-			batch(() => {
-				setState('leftPortraitImage', '');
-				setState('leftPortraitName', '');
-			});
-		} else if (state.rightPortraitName === portraitName) {
-			await view.hide('right');
-
-			batch(() => {
-				setState('rightPortraitImage', '');
-				setState('rightPortraitName', '');
-			});
-		}
-	};
-	const clearPortraits: ControllerFns['clearPortraits'] = async () => {
-		await view.hide();
-
-		batch(() => {
-			setState('leftPortraitImage', '');
-			setState('leftPortraitName', '');
-			setState('rightPortraitImage', '');
-			setState('rightPortraitName', '');
-		});
+	const clearPortraits: ControllerFns['clearPortraits'] = async (key) => {
+		await view.hide(undefined, key);
+		state.clearPortraits(key);
 	};
 
 	const pushInventoryItem = (itemID: ItemID) => {
@@ -344,26 +240,24 @@ const ControllerProvider: Component<Props> = (props) => {
 
 	const context: ControllerFns = {
 		state,
-		// prompt,
+		view,
 		toggleFlag,
 		runDialogue,
 		queueDialogue,
 		continueDialogue,
-		updateStage: updateStage,
 		addJournalEntry,
 		setBGImage,
 		setOptions,
-		setPortraitImage,
-		setPortraitName,
-		setPortrait,
-		clearPortraitImage,
-		clearPortraitName,
+		// setDialogue,
+		updatePortrait,
 		clearPortrait,
 		clearPortraits,
 		pushInventoryItem,
 		consumeInventoryItem,
 		useInventoryItem,
 	};
+	state.provideContext(context);
+
 	return (
 		<ControllerContext.Provider value={context}>
 			{props.children}

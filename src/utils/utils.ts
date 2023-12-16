@@ -47,7 +47,8 @@ export const deepMerge = <T extends Record<string, any>>(
 
 			//@ts-ignore -- typescript sucks balls
 			target[key] = deepMerge(target[key], source[key]!);
-		} else target[key] = source[key]!;
+		} else if (!((source[key] as any) instanceof Function))
+			target[key] = source[key]!;
 	}
 
 	return target;
@@ -61,3 +62,6 @@ export const formatLabel = (label: string) =>
 
 export const descendingLen = <T extends { length: number }>(a: T, b: T) =>
 	b.length - a.length;
+
+export const getRandomElement = <T>(arr: T[]) =>
+	arr[Math.floor(Math.random() * arr.length)];

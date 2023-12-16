@@ -18,7 +18,6 @@ export const [SBDefaultProps, SBDialogues] = createDialogue(
 		playerExplainsScroll: {
 			text: ['*Nods and bleats enthusiastically*'],
 			portraitName: 'Mysterious Sheep',
-			speaker: 'Mysterious Sheep',
 			onEnd: ({ setOptions, runDialogue }) => {
 				setOptions({
 					'Activate the scroll': () => runDialogue('DM', 'playerUsesScroll'),
@@ -28,10 +27,10 @@ export const [SBDefaultProps, SBDialogues] = createDialogue(
 		sheepSpeaksFirstTime: {
 			text: ['Now that you can understand me...'],
 			portraitName: 'Mysterious Sheep',
-			speaker: 'Mysterious Sheep',
 			onEnd: ({ queueDialogue }) => queueDialogue('SB', 'sheepIntroducesSelf'),
-			beforeNext: ({ clearPortraitName }) =>
-				clearPortraitName('SB', 'sheepSpeaksFirstTime'),
+			beforeNext: async ({ clearPortrait }) => {
+				await clearPortrait('SB', 'name');
+			},
 		},
 		sheepIntroducesSelf: {
 			text: ['I am Finethir Shinebright, a wizard in dire need of aid'],
@@ -41,10 +40,9 @@ export const [SBDefaultProps, SBDialogues] = createDialogue(
 			text: ['The sheep explains the quest', 'blah blah evil wizard...'],
 			onEnd: ({ toggleFlag, queueDialogue }) => {
 				toggleFlag('SBExplainedQuest');
-				queueDialogue('DM', 'gruzAppears');
+				queueDialogue('DM', 'gruzAppears_1');
 			},
-			beforeNext: async ({ clearPortrait }) =>
-				await clearPortrait('SB', 'sheepExplainsQuest'),
+			beforeNext: async ({ clearPortrait }) => await clearPortrait('SB'),
 		},
 	}
 );

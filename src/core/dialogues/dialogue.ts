@@ -1,19 +1,20 @@
 import { ControllerFns } from '../../contexts/Controller';
 import { EnsureFnParamTyping, OmitDefaults } from '../../types/utils';
-import { EntityID } from '../entities/entity';
+import { Entity, EntityID } from './entities/entity';
 import { DMDialogueName } from './DM';
 import { GZDialogueName } from './GZ';
 import { MP1DialogueName } from './MP1';
 import { PLDialogueName } from './PL';
 import { SBDialogueName } from './SB';
 
-export type Dialogue = {
+export type Dialogue<E extends EntityID = EntityID> = {
+	id: GetDialogue<E>;
 	text: string[];
 	bgImage: string;
-	entity: EntityID;
+	entity: E;
 	portrait: string;
 	portraitName: string;
-	speaker: string;
+	speaker?: EntityID;
 	onStart: (fns: ControllerFns) => void;
 	onEnd: (fns: ControllerFns) => void;
 	beforeNext: (fns: ControllerFns) => Promise<void>;
@@ -21,26 +22,30 @@ export type Dialogue = {
 
 export const defaultDialogueProps = {
 	bgImage: '',
-	portrait: '',
-	portraitName: '',
-	speaker: '',
 	onStart: () => {},
 	onEnd: () => {},
 	beforeNext: undefined,
-} as const satisfies Partial<Dialogue>;
+} as const satisfies Partial<Dialogue<any>>;
 
-export type ReqDialogueProps = OmitDefaults<
-	Dialogue,
-	keyof typeof defaultDialogueProps
+export type ReqDialogueProps<E extends EntityID> = OmitDefaults<
+	Dialogue<E>,
+	keyof typeof defaultDialogueProps | keyof Entity
 >;
 
 //? validate and generate typings for the dialogue object
-export const createDialogue = <D extends string, P extends Partial<Dialogue>>(
-	defProps: P,
+export const createDialogue = <
+	E extends EntityID,
+	P extends Partial<Dialogue<E>>
+>(
+	defProps:
+		| {
+				entity: E;
+		  }
+		| P,
 	dialogues: Record<
-		D,
+		GetDialogue<E>,
 		//@ts-ignore -- it works 🤷🏻‍♂️
-		EnsureFnParamTyping<OmitDefaults<ReqDialogueProps, keyof P>>
+		EnsureFnParamTyping<OmitDefaults<ReqDialogueProps<E>, keyof P>>
 	>
 ) => {
 	return [defProps, dialogues] as const;

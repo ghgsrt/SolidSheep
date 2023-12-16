@@ -3,6 +3,7 @@ import Dialogue from './Dialogue';
 import NameBar from './NameBar';
 // import TabBar from './TabBar';
 import { state } from '../../contexts/SessionState';
+import { entityLUT } from '../../core/LUTs';
 
 type props = {};
 
@@ -11,18 +12,24 @@ const Middle: Component<props> = () => {
 		<>
 			<section class='middle'>
 				<NameBar
-					left={state.leftPortraitName}
-					right={state.rightPortraitName}
-					leftIsActive={
-						state.activeSpeaker === state.leftPortraitName ||
-						(state.activeSpeaker === 'Player' &&
-							state.playerName === state.leftPortraitName)
+					// left={state.leftPortraitName()}
+					// right={state.rightPortraitName()}
+					left={
+						(state._leftPortraitName ||
+							(state.leftDialogue &&
+								(state.leftDialogue!.portraitName ||
+									entityLUT[state.leftDialogue!.entity].portraitName))) ??
+						''
 					}
-					rightIsActive={
-						state.activeSpeaker === state.rightPortraitName ||
-						(state.activeSpeaker === 'Player' &&
-							state.playerName === state.rightPortraitName)
+					right={
+						(state._rightPortraitName ||
+							(state.rightDialogue &&
+								(state.rightDialogue!.portraitName ||
+									entityLUT[state.rightDialogue!.entity].portraitName))) ??
+						''
 					}
+					leftIsActive={state.activeSpeaker === state.leftDialogue?.entity}
+					rightIsActive={state.activeSpeaker === state.rightDialogue?.entity}
 				/>
 				<div class='wrapper'>
 					<Dialogue />

@@ -1,9 +1,14 @@
 import { createStore } from 'solid-js/store';
 import { Item } from '../core/items/item';
+import { Dialogue } from '../core/dialogues/dialogue';
+import { EntityID } from '../core/dialogues/entities/entity';
+import { formatLabel } from '../utils/utils';
+import { Accessor, batch, createMemo } from 'solid-js';
+import { entityLUT } from '../core/LUTs';
+import { ControllerFns } from './Controller';
 
 export type StoryOption = () => void;
 export type StoryOptions = Record<string, StoryOption>;
-// export type StoryOptions = Record<string, Record<string, StoryOption>>;
 
 export type Flag =
 	| 'canGetSwA'
@@ -54,18 +59,25 @@ export type State = {
 	nokeDefeated: boolean;
 	nokeDead: boolean;
 
-	// images
-	bgImage: string;
-	leftPortraitImage: string;
-	rightPortraitImage: string;
+	DMDialogue?: Dialogue;
+	// active portraits
+	leftDialogue?: Dialogue;
+	rightDialogue?: Dialogue;
 
-	// text
+	dialogueIdx: number;
+
+	// images/portrait overrides
+	bgImage: string;
+	_leftPortraitImage: string;
+	_rightPortraitImage: string;
+
+	// text/portrait overrides
 	dialogue: string;
-	leftPortraitName: string;
-	rightPortraitName: string;
+	_leftPortraitName: string;
+	_rightPortraitName: string;
 
 	// story
-	activeSpeaker: string;
+	activeSpeaker?: EntityID;
 	options: StoryOptions | undefined;
 
 	// containers
@@ -77,9 +89,30 @@ export type State = {
 	// player
 	playerName: string;
 
+	context?: ControllerFns;
+	provideContext: (context: ControllerFns) => void;
+	// activeDialogue?: Dialogue;
 	// functions
+	leftPortraitImage: Accessor<string>;
+	rightPortraitImage: Accessor<string>;
+	leftPortraitName: Accessor<string>;
+	rightPortraitName: Accessor<string>;
+	// activeDialogue: Accessor<Dialogue | undefined>;
+	// setDialogue: (dialogue: Dialogue, side?: 'left' | 'right') => void;
+	// updateDialogueIdx: (idx: number) => void;
+	// continueDialogue: () => void;
+	updatePortrait: (
+		side: 'left' | 'right',
+		key: 'image' | 'name',
+		value: string
+	) => void;
+	clearPortrait: (side: 'left' | 'right', key?: 'image' | 'name') => void;
+	clearPortraits: (key?: 'image' | 'name') => void;
 	hasExamined: (item: Item) => boolean;
 };
+
+//@ts-ignore
+export const [state, setState] = createStore<State>();
 
 const defaultState: State = {
 	canGetSwA: false,
@@ -106,14 +139,21 @@ const defaultState: State = {
 	nokeDead: false,
 
 	bgImage: '',
-	leftPortraitImage: '',
-	rightPortraitImage: '',
-
 	dialogue: '',
-	leftPortraitName: '',
-	rightPortraitName: '',
 
-	activeSpeaker: '',
+	DMDialogue: undefined,
+	leftDialogue: undefined,
+	rightDialogue: undefined,
+
+	dialogueIdx: 0,
+
+	_leftPortraitImage: '',
+	_rightPortraitImage: '',
+
+	_leftPortraitName: '',
+	_rightPortraitName: '',
+
+	activeSpeaker: undefined,
 	options: undefined,
 
 	history: [],
@@ -123,10 +163,108 @@ const defaultState: State = {
 
 	playerName: 'Player',
 
-	hasExamined(item: Item) {
-		if (item.id === 'scrollOfSPA') return this.hasExaminedScroll;
+	context: undefined,
+	provideContext: (context) => {
+		setState('context', context);
+	},
+
+	leftPortraitImage: createMemo(() => {
+		return (
+			(state._leftPortraitImage ||
+				(state.leftDialogue &&
+					(state.leftDialogue?.portrait ||
+						entityLUT[state.leftDialogue!.entity].portrait))) ??
+			''
+		);
+	}),
+	rightPortraitImage: createMemo(
+		() =>
+			(state._rightPortraitImage ||
+				(state.rightDialogue &&
+					(state.rightDialogue?.portrait ||
+						entityLUT[state.rightDialogue!.entity].portrait))) ??
+			''
+	),
+	leftPortraitName: createMemo(() => {
+		return (
+			(state._leftPortraitName ||
+				(state.leftDialogue &&
+					(state.leftDialogue!.portraitName ||
+						entityLUT[state.leftDialogue!.entity].portraitName))) ??
+			''
+		);
+	}),
+	rightPortraitName: createMemo(
+		() =>
+			(state._rightPortraitName ||
+				(state.rightDialogue &&
+					(state.rightDialogue!.portraitName ||
+						entityLUT[state.rightDialogue!.entity].portraitName))) ??
+			''
+	),
+	// activeDialogue: undefined,
+	// activeDialogue: () => {
+	// 	return (
+	// 		state.DMDialogue ??
+	// 		(state.activeSpeaker ===
+	// 		(state.leftDialogue?.speaker || state.leftDialogue?.entity)
+	// 			? state.leftDialogue
+	// 			: state.activeSpeaker ===
+	// 			  (state.rightDialogue?.speaker || state.rightDialogue?.entity)
+	// 			? state.rightDialogue
+	// 			: undefined)
+	// 	);
+	// },
+	// async setDialogue(dialogue, side) {
+	// 	// setState('options', undefined);
+	// },
+	// updateDialogueIdx(idx) {
+	// 	if (idx >= (state.activeDialogue?.text.length ?? 0) - 1)
+	// 		state.activeDialogue?.onEnd?.(state.context!);
+
+	// 	batch(() => {
+	// 		setState('dialogueIdx', idx);
+	// 		setState('dialogue', state.activeDialogue?.text[idx] ?? '');
+	// 	});
+	// },
+	// continueDialogue() {
+	// 	state.updateDialogueIdx(state.dialogueIdx + 1);
+	// },
+	updatePortrait(side, key, value) {
+		setState(
+			`_${side as 'left' | 'right'}Portrait${
+				formatLabel(key) as 'Image' | 'Name'
+			}`,
+			value
+		);
+	},
+	clearPortrait(side, key) {
+		batch(() => {
+			if (!key || key === 'image') setState(`_${side}PortraitImage`, '');
+			if (!key || key === 'name') setState(`_${side}PortraitName`, '');
+			if (!key) setState(`${side}Dialogue`, undefined);
+		});
+	},
+	clearPortraits(key) {
+		batch(() => {
+			if (!key || key === 'image') {
+				setState('_leftPortraitImage', '');
+				setState('_rightPortraitImage', '');
+			}
+			if (!key || key === 'name') {
+				setState('_leftPortraitName', '');
+				setState('_rightPortraitName', '');
+			}
+			if (!key) {
+				setState('leftDialogue', undefined);
+				setState('rightDialogue', undefined);
+			}
+		});
+	},
+	hasExamined(item) {
+		if (item.id === 'scrollOfSPA') return state.hasExaminedScroll;
 		else return false;
 	},
 };
 
-export const [state, setState] = createStore<State>(defaultState);
+setState(defaultState);

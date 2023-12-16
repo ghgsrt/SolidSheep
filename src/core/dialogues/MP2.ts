@@ -10,5 +10,7 @@ export const [MP2DefaultProps, MP2Dialogues] = createDialogue(
 	{
 		entity: 'MP2',
 	},
-	{}
+	{
+		
+	}
 );

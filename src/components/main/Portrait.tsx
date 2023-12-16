@@ -19,6 +19,7 @@ const Portrait: Component<props> = (props) => {
 	});
 
 	createEffect(() => {
+		console.log(props.src)
 		// if (!props.src)
 		// if (props.src) setTimeout(() => portrait.classList.add('show'), 0);
 	});

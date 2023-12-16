@@ -1,5 +1,5 @@
 import { Component, For, createEffect, createSignal } from 'solid-js';
-import { state } from '../../contexts/SessionState';
+import { setState, state } from '../../contexts/SessionState';
 import { useView } from '../../contexts/View';
 
 type props = {};
@@ -17,8 +17,10 @@ const Options: Component<props> = () => {
 
 	const selectOption = (key: string) => {
 		setOpen(false);
+		const caller = state.options![key];
 		setTimeout(() => {
-			state.options![key]();
+			setState('options', undefined);
+			caller();
 		}, 1000);
 	};
 

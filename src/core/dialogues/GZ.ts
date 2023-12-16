@@ -15,12 +15,10 @@ export const [GZDefaultProps, GZDialogues] = createDialogue(
 			onEnd: ({ queueDialogue }) => queueDialogue('DM', '__placeholder'),
 		},
 		takingSheep: {
-			text: ["I am Guz, and I am taking this sheep."],
-			onEnd: ({ setOptions }) => {
-				setOptions({
-					
-				});
+			text: ['I am Guz, and I am taking this sheep.'],
+			onEnd: ({ queueDialogue }) => {
+				queueDialogue('DM', '__placeholder');
 			},
-		}
+		},
 	}
 );

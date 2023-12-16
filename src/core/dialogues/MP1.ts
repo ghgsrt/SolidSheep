@@ -13,8 +13,8 @@ export const [MP1DefaultProps, MP1Dialogues] = createDialogue(
 	{
 		playerTakesScroll: {
 			text: ['What is that? Can you <strong>explain</strong> it to us?'],
-			portrait: 'mage_party.png',
 			onEnd: ({ runDialogue, setOptions }) => {
+				console.log('huh')
 				setOptions({
 					"I'm not sure": () => runDialogue('PL', 'explainsScroll'),
 					'Examine the scroll': () => runDialogue('DM', 'playerExaminesScroll'),

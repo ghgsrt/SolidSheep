@@ -1,8 +1,8 @@
 import { ControllerFns } from '../../contexts/Controller';
-import { Subset } from '../../types/utils';
+import { OmitDefaults } from '../../types/utils';
 
 export interface Item {
-	id: string;
+	id: ItemID;
 	name: string;
 	unknownName?: string;
 	description: string;
@@ -44,8 +44,7 @@ export const defaultArmorProps = {
 	durability: 0,
 } as const satisfies Partial<Armor>;
 
-export type ReqItemProps = Omit<Item, keyof typeof defaultItemProps> &
-	Subset<Pick<Item, keyof typeof defaultItemProps>>;
+export type ReqItemProps = OmitDefaults<Item, keyof typeof defaultItemProps>;
 // export type ReqWeaponProps = Omit<Weapon, keyof typeof defaultWeaponProps> &
 // 	Subset<Pick<Weapon, keyof typeof defaultWeaponProps>>;
 // export type ReqArmorProps = Omit<Armor, keyof typeof defaultArmorProps> &
@@ -60,7 +59,6 @@ export type ItemID = (typeof item)[number];
 
 export const items: Record<ItemID, ReqItemProps> = {
 	scrollOfSPA: {
-		id: 'scrollOfSPA',
 		name: 'Scroll of Speak with Animals',
 		unknownName: 'Scroll',
 		description: 'A scroll with a spell that allows you to speak with animals.',

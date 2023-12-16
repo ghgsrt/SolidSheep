@@ -4,6 +4,7 @@ import Dock from './main/Dock';
 import { useView } from '../contexts/View';
 import MainMenu from './intro/MainMenu';
 import Credits from './outro/Credits';
+import CharacterCreate from './intro/CharacterCreate';
 
 type props = {};
 
@@ -16,12 +17,15 @@ const Main: Component<props> = () => {
 				data-view={view.currView()}
 				classList={{
 					pending: view.pending(),
-					show: view.currView() === 'intro' || !view.pending(),
+					show: view.currView() !== 'main' || !view.pending(),
 				}}
 			>
 				<Switch>
 					<Match when={view.currView() === 'intro'}>
 						<MainMenu />
+					</Match>
+					<Match when={view.currView() === 'character-create'}>
+						<CharacterCreate />
 					</Match>
 					<Match when={view.currView() === 'main'}>
 						<Stage />

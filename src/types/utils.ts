@@ -25,7 +25,7 @@ export type Subset<K> = {
 		: K[attr];
 };
 
-export type OmitDefaults<T, D extends keyof T> = Omit<T, D> &
+export type OmitDefaults<T, D extends keyof T> = Omit<T, D | 'id'> &
 	Subset<Pick<T, D>>;
 
 export type EnsureFnParamTyping<T> = {

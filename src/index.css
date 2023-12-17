@@ -320,22 +320,27 @@ main.show[data-view='main'] {
 	left: 0;
 	right: 0;
 	/* bottom: 0; */
-	z-index: -1;
+	z-index: -2;
 	/* background: var(--clr-foreground); */
 	background: url(/public/icons/icon_bg.png) no-repeat;
 	/* background-size: 110% 102%; */
 	background-size: cover;
 	opacity: 1;
 }
+.backdrop:nth-child(2) {
+	/* background: blue !important; */
+	/* z-index: 100; */
+	z-index: -1;
+}
 .backdrop.show {
-	transition: top 500ms cubic-bezier(0.445, 0.05, 0.55, 0.95);
+	transition: top 1000ms cubic-bezier(0.445, 0.05, 0.55, 0.95);
 	/* transition: top 1000ms var(--trans-bounce); */
 	top: 0 !important;
 }
 .backdrop.special {
 	border-radius: 0 0 var(--br-primary) var(--br-primary);
 }
-.backdrop.pending {
+.backdrop.pending:not(.backdrop-queue) {
 	/* opacity: 0; */
 	transition: background 200ms ease-in-out;
 	/* transition: opacity 1000ms ease-in-out !important; */

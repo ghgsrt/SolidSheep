@@ -131,7 +131,7 @@ export const [DMDefaultProps, DMDialogues] = createDialogue({
 		onEnd: async ({ endGame }) => await endGame(),
 	},
 	onForestPath: {
-		text: ['Boobies'],
+		text: ['Forest Path'],
 		onEnd: async ({ endGame }) => await endGame(),
 	},
 	__placeholder: {

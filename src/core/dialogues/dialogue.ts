@@ -1,5 +1,4 @@
 import { ControllerFns } from '../../contexts/Controller';
-import { EnsureFnParamTyping, OmitDefaults } from '../../types/utils';
 import { Entity, EntityID } from './entities/entity';
 import { DMDialogueName } from './DM';
 import { GZDialogueName } from './GZ';
@@ -7,13 +6,14 @@ import { MP1DialogueName } from './MP1';
 import { PLDialogueName } from './PL';
 import { SBDialogueName } from './SB';
 import { MP2DialogueName } from './MP2';
+import { createValidator } from '../../utils/utils';
 
 export type Dialogue<E extends EntityID = EntityID> = {
 	id: GetDialogue<E>;
 	text: string[];
 	bgImage: string;
 	entity: E;
-	portrait: string;
+	portraitImage: string;
 	portraitName: string;
 	speaker?: EntityID;
 	onStart: (fns: ControllerFns) => Promise<void> | void;
@@ -28,32 +28,20 @@ export const defaultDialogueProps = {
 	beforeNext: undefined,
 } as const satisfies Partial<Dialogue<any>>;
 
-export type ReqDialogueProps<E extends EntityID> = OmitDefaults<
-	Dialogue<E>,
-	keyof typeof defaultDialogueProps | keyof Entity
->;
-
 //? validate and generate typings for the dialogue object
 export const createDialogue = <
-	E extends EntityID,
-	P extends Partial<Dialogue<E>>
+	P extends Partial<Dialogue<E>> & { entity: EntityID },
+	E extends EntityID = P['entity']
 >(
-	defProps:
-		| {
-				entity: E;
-		  }
-		| P,
-	dialogues: Record<
-		GetDialogue<E>,
-		//@ts-ignore -- it works 🤷🏻‍♂️
-		EnsureFnParamTyping<OmitDefaults<ReqDialogueProps<E>, keyof P>>
-	>
+	defProps: P
 ) => {
-	return [defProps, dialogues] as const;
+	return createValidator<
+		Dialogue<E>,
+		keyof typeof defaultDialogueProps | keyof Entity,
+		GetDialogue<E>
+	>()(defProps);
 };
 
-// const speaker = ['DM', 'PL', 'MP', 'SB', 'GZ'] as const;
-// export type Speaker = (typeof speaker)[number];
 export type GetDialogue<T extends EntityID> = T extends 'DM'
 	? DMDialogueName
 	: T extends 'PL'
@@ -67,14 +55,3 @@ export type GetDialogue<T extends EntityID> = T extends 'DM'
 	: T extends 'GZ'
 	? GZDialogueName
 	: never;
-
-// ? keyof typeof DMDialogues
-// : T extends 'PL'
-// ? keyof typeof PLDialogues
-// : T extends 'MP'
-// ? keyof typeof MPDialogues
-// : T extends 'SB'
-// ? keyof typeof SBDialogues
-// : T extends 'GZ'
-// ? keyof typeof GZDialogues
-// : never;

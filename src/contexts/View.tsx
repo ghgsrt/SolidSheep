@@ -22,6 +22,8 @@ type Props = {
 export type ViewValues = {
 	currView: Accessor<View>;
 	setCurrView: Setter<View>;
+	gameEnding: Accessor<boolean>;
+	setGameEnding: Setter<boolean>;
 	pending: Accessor<boolean>;
 	updateView: (
 		view: View,
@@ -37,6 +39,9 @@ export type ViewValues = {
 	setOptionsHeightTarget: Setter<number>;
 	showOptions: Accessor<boolean>;
 	setShowOptions: Setter<boolean>;
+	hideBG: Accessor<boolean>;
+	setHideBG: Setter<boolean>;
+	updateBG: () => Promise<void>;
 	hideLeftImage: Accessor<boolean>;
 	setHideLeftImage: Setter<boolean>;
 	hideRightImage: Accessor<boolean>;
@@ -60,6 +65,7 @@ const ViewContext = createContext<ViewValues>();
 
 const ViewProvider: Component<Props> = (props) => {
 	const [currView, setCurrView] = createSignal<View>('intro');
+	const [gameEnding, setGameEnding] = createSignal(false);
 	const [pending, setPending] = createSignal(false);
 	const updateView = async (
 		view: View,
@@ -81,6 +87,13 @@ const ViewProvider: Component<Props> = (props) => {
 	const [dockView, setDockView] = createSignal<DockView>('prompt');
 	const [optionsHeightTarget, setOptionsHeightTarget] = createSignal(0);
 	const [showOptions, setShowOptions] = createSignal(false);
+
+	const [hideBG, setHideBG] = createSignal(false);
+	const updateBG = async () => {
+		setHideBG(true);
+		await sleep(1000);
+		setHideBG(false);
+	};
 
 	const [hideLeftImage, setHideLeftImage] = createSignal(false);
 	const [hideRightImage, setHideRightImage] = createSignal(false);
@@ -147,12 +160,17 @@ const ViewProvider: Component<Props> = (props) => {
 		updateView,
 		currView,
 		setCurrView,
+		gameEnding,
+		setGameEnding,
 		dockView,
 		setDockView,
 		optionsHeightTarget,
 		setOptionsHeightTarget,
 		showOptions,
 		setShowOptions,
+		hideBG,
+		setHideBG,
+		updateBG,
 		hideLeftImage,
 		setHideLeftImage,
 		hideRightImage,

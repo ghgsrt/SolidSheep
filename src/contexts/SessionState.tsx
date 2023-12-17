@@ -1,6 +1,6 @@
 import { createStore } from 'solid-js/store';
 import { Item } from '../core/items/item';
-import { Dialogue } from '../core/dialogues/dialogue';
+import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
 import { EntityID } from '../core/dialogues/entities/entity';
 import { formatLabel } from '../utils/utils';
 import { Accessor, batch, createMemo } from 'solid-js';
@@ -89,7 +89,10 @@ export type State = {
 	// player
 	playerName: string;
 
+	ranDialogues: Set<GetDialogue<EntityID>>;
+
 	context?: ControllerFns;
+	getPortrait: (side: 'left' | 'right', key: 'Image' | 'Name') => string;
 	provideContext: (context: ControllerFns) => void;
 	// activeDialogue?: Dialogue;
 	// functions
@@ -161,46 +164,31 @@ const defaultState: State = {
 	notebook: [],
 	inventory: [],
 
-	playerName: 'Player',
+	playerName: '',
+
+	ranDialogues: new Set(),
 
 	context: undefined,
 	provideContext: (context) => {
 		setState('context', context);
 	},
 
-	leftPortraitImage: createMemo(() => {
+	getPortrait: (side, key) => {
 		return (
-			(state._leftPortraitImage ||
-				(state.leftDialogue &&
-					(state.leftDialogue?.portrait ||
-						entityLUT[state.leftDialogue!.entity].portrait))) ??
+			(state[`_${side}Portrait${key}`] ||
+				(state[`${side}Dialogue`] &&
+					(state[`${side}Dialogue`]?.[`portrait${key}`] ||
+						entityLUT[state[`${side}Dialogue`]!.entity][`portrait${key}`]))) ??
 			''
 		);
-	}),
-	rightPortraitImage: createMemo(
-		() =>
-			(state._rightPortraitImage ||
-				(state.rightDialogue &&
-					(state.rightDialogue?.portrait ||
-						entityLUT[state.rightDialogue!.entity].portrait))) ??
-			''
+	},
+	leftPortraitImage: createMemo(() => state?.getPortrait?.('left', 'Image')),
+	rightPortraitImage: createMemo(() => state?.getPortrait?.('right', 'Image')),
+	leftPortraitName: createMemo(
+		() => state?.getPortrait?.('left', 'Name').split(' ')[0]
 	),
-	leftPortraitName: createMemo(() => {
-		return (
-			(state._leftPortraitName ||
-				(state.leftDialogue &&
-					(state.leftDialogue!.portraitName ||
-						entityLUT[state.leftDialogue!.entity].portraitName))) ??
-			''
-		);
-	}),
 	rightPortraitName: createMemo(
-		() =>
-			(state._rightPortraitName ||
-				(state.rightDialogue &&
-					(state.rightDialogue!.portraitName ||
-						entityLUT[state.rightDialogue!.entity].portraitName))) ??
-			''
+		() => state?.getPortrait?.('right', 'Name').split(' ')[0]
 	),
 	// activeDialogue: undefined,
 	// activeDialogue: () => {

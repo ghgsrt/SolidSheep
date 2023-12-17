@@ -17,7 +17,8 @@ const Main: Component<props> = () => {
 				data-view={view.currView()}
 				classList={{
 					pending: view.pending(),
-					show: view.currView() !== 'main' || !view.pending(),
+					show:
+						view.gameEnding() || view.currView() !== 'main' || !view.pending(),
 				}}
 			>
 				<Switch>

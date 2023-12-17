@@ -12,12 +12,13 @@ const Options: Component<props> = () => {
 		view.setOptionsHeightTarget(
 			(Object.keys(state.options ?? {}).length + 0.7) * 32
 		);
-		if (state.options) setOpen(true);
+		if (state.options && Object.keys(state.options).length > 0) setOpen(true);
 	});
 
 	const selectOption = (key: string) => {
-		setOpen(false);
 		const caller = state.options![key];
+		if (!caller) return;
+		setOpen(false);
 		setTimeout(() => {
 			setState('options', undefined);
 			caller();
@@ -36,9 +37,11 @@ const Options: Component<props> = () => {
 				<div class='options'>
 					<For each={Object.keys(state.options ?? {})}>
 						{(key) => (
-							<div class='option' onClick={() => selectOption(key)}>
-								{key}
-							</div>
+							<div
+								class='option'
+								onClick={() => selectOption(key)}
+								innerHTML={key}
+							></div>
 						)}
 					</For>
 				</div>

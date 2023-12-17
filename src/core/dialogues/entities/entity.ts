@@ -3,12 +3,12 @@ import { OmitDefaults } from '../../../types/utils';
 export type Entity = {
 	id: EntityID;
 	portraitName: string;
-	portrait: string;
+	portraitImage: string;
 };
 
 export const defaultEntityProps = {
 	portraitName: '',
-	portrait: '',
+	portraitImage: '',
 } as const satisfies Partial<Entity>;
 
 export type ReqEntityProps = OmitDefaults<
@@ -26,11 +26,11 @@ export const entities: Record<EntityID, ReqEntityProps> = {
 	PL: {},
 	GZ: {
 		portraitName: 'Guz',
-		portrait: 'guz.png',
+		portraitImage: 'guz.png',
 	},
 	SB: {
 		portraitName: 'Finethir Shinebright',
-		portrait: 'sheep.png',
+		portraitImage: 'sheep.png',
 	},
 	MP1: {},
 	MP2: {},

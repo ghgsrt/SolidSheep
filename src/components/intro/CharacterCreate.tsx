@@ -37,14 +37,14 @@ const CharacterCreate: Component<props> = () => {
 		if (characterIdx() === undefined || !value()) return;
 
 		entityLUT.PL!.portraitName = value();
-		entityLUT.PL!.portrait = characters[characterIdx()!].portrait;
+		entityLUT.PL!.portraitImage = characters[characterIdx()!].portrait;
 		characters = characters.filter((_, i) => i !== characterIdx());
 		const mp1 = characters[characterIdx()! % 2 === 0 ? 'shift' : 'pop']()!;
 		const mp2 = characters.pop()!;
 
-		entityLUT.MP1!.portrait = mp1.portrait;
+		entityLUT.MP1!.portraitImage = mp1.portrait;
 		entityLUT.MP1!.portraitName = mp1.name;
-		entityLUT.MP2!.portrait = mp2.portrait;
+		entityLUT.MP2!.portraitImage = mp2.portrait;
 		entityLUT.MP2!.portraitName = mp2.name;
 
 		view.updateView('main');

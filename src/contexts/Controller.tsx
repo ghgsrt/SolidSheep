@@ -10,19 +10,29 @@ import { JSX } from 'solid-js/jsx-runtime';
 import { Flag, State, StoryOptions, state, setState } from './SessionState';
 import { ItemID } from '../core/items/item';
 import { produce } from 'solid-js/store';
-import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
+import { GetDialogue, Dialogue } from '../core/dialogues/dialogue';
 import { itemLUT, speakerLUT } from '../core/LUTs';
 import { EntityID } from '../core/dialogues/entities/entity';
 import { ViewValues, useView } from './View';
 import { Tail } from '../types/utils';
+import { sleep } from '../utils/utils';
 
 type DialogueLookupFn<R = void> = <
 	T extends EntityID,
 	N extends GetDialogue<T>
 >(
 	speaker: T,
-	dialogue: N
+	dialogue: N,
+	_?: undefined
 ) => R;
+// type DialogueMultiLookupFn<O extends Record<string, any>, R = void> = <
+// 	T extends EntityID,
+// 	N extends GetDialogue<T>
+// >(
+// 	speaker: T,
+// 	dialogues: N | N[],
+// 	options?: O
+// ) => R;
 
 type ExtendFirstParam<T extends (...args: any[]) => any, E extends any> = (
 	...args: [Parameters<T>[0] | E, ...Tail<Parameters<T>>]
@@ -35,11 +45,19 @@ type Async<T extends (...args: any[]) => any> = (
 export type ControllerFns = {
 	state: State;
 	view: ViewValues;
+	endGame: () => Promise<void>;
 	toggleFlag: (flag: Flag, set?: boolean) => void;
 	queueDialogue: DialogueLookupFn;
 	runDialogue: DialogueLookupFn;
 	continueDialogue: () => void;
 	addJournalEntry: (entry: string) => void;
+	hasRan:
+		| DialogueLookupFn<boolean> &
+				(<T extends EntityID, N extends GetDialogue<T>>(
+					speaker: T,
+					dialogues: N[],
+					options?: { atLeast?: number; atMost?: number }
+				) => { [K in N]: boolean } & { result: boolean });
 	setBGImage: (image: string) => void;
 	setOptions: (options?: StoryOptions) => void;
 	// setDialogue: State['setDialogue'];
@@ -59,6 +77,18 @@ const ControllerContext = createContext<ControllerFns>();
 
 const ControllerProvider: Component<Props> = (props) => {
 	const view = useView()!;
+
+	const endGame = async () => {
+		setOptions({});
+		view.setGameEnding(true);
+		await view.updateView('outro', {
+			preSleepMS: 2000,
+		});
+		setOptions(undefined);
+		clearPortraits();
+	};
+
+	//!!! GIVE BEFORENEXT INFO ON WHAT DIALOGUE IS NEXT
 
 	onMount(() => {});
 	const active = createMemo(() => {
@@ -80,12 +110,12 @@ const ControllerProvider: Component<Props> = (props) => {
 			? 'right'
 			: undefined;
 	const updateIdx = (idx: number) => {
-		if (idx >= (active()?.text.length ?? 0) - 1) active()?.onEnd?.(context!);
-
 		batch(() => {
 			setState('dialogueIdx', idx);
-			setState('dialogue', active()?.text[idx] ?? '');
+			setState('dialogue', (prev) => active()?.text[idx] || prev);
 		});
+
+		if (idx >= (active()?.text.length ?? 0) - 1) active()?.onEnd?.(context!);
 	};
 	const setDialogue = async (dialogue: Dialogue, side?: 'left' | 'right') => {
 		const entitySide = getSideOfEntity(dialogue.entity);
@@ -104,26 +134,19 @@ const ControllerProvider: Component<Props> = (props) => {
 				setState(`${side!}Dialogue`, undefined); //! prevent object merge
 				setState(`${side!}Dialogue`, (_) => dialogue);
 			}
-
-			// setState('activeDialogue', dialogue);
 		});
 
 		batch(() => {
 			updateIdx(0);
-			if (dialogue.bgImage) setState('bgImage', dialogue.bgImage);
+			if (dialogue.bgImage) setBGImage(dialogue.bgImage);
 
 			setState(`_${side!}PortraitImage`, '');
 			setState(`_${side!}PortraitName`, '');
 		});
-	};
-	// const idxUpdate = () => {
-	// 	console.log(
-	// 		state.activeDialogue()?.portraitName,
-	// 		state.activeDialogue() &&
-	// 			entityLUT[state.activeDialogue()!.entity].portraitName
-	// 	);
 
-	// };
+		setState('ranDialogues', (ran) => ran.add(dialogue.id));
+	};
+
 	let dialogueQueue: [EntityID, GetDialogue<EntityID>] | undefined;
 	const _runDialogue = async <E extends EntityID>(
 		speaker: E,
@@ -146,7 +169,7 @@ const ControllerProvider: Component<Props> = (props) => {
 		const item = speakerLUT[speaker][dialogue];
 		console.log(item);
 		setDialogue(item);
-		// idxUpdate();
+
 		item.onStart?.(context);
 	};
 	const queueDialogue: ControllerFns['queueDialogue'] = (speaker, dialogue) =>
@@ -165,13 +188,40 @@ const ControllerProvider: Component<Props> = (props) => {
 		if (state.options) return;
 		// state.continueDialogue();
 		updateIdx(state.dialogueIdx + 1);
-		// idxUpdate();
+	};
+
+	//@ts-ignore -- it works, shut up
+	const hasRan: ControllerFns['hasRan'] = (_entity, dialogues, options) => {
+		if (!Array.isArray(dialogues)) return state.ranDialogues.has(dialogues);
+
+		const ran = dialogues.reduce(
+			(prev, curr, _i) => {
+				const ran = state.ranDialogues.has(curr);
+				prev[curr] = ran;
+				prev.times += Number(ran);
+				return prev;
+			},
+			{ times: 0 } as Record<string, any>
+		);
+
+		if (options?.atLeast)
+			return { result: ran.times >= options.atLeast, ...ran };
+		if (options?.atMost) return { result: ran.times <= options.atMost, ...ran };
+		return { result: ran.times === dialogues.length, ...ran };
 	};
 
 	const toggleFlag = (flag: Flag, set?: boolean) =>
 		setState(produce((state) => (state[flag] = set ?? !state[flag])));
-	const setBGImage = (image?: string) =>
+	const setBGImage = async (image?: string) => {
+		if (!image) return;
+		if (!image.includes('intro')) {
+			view.setHideBG(true);
+			await sleep(100);
+		}
 		setState('bgImage', (prev) => image || prev);
+		await sleep(75);
+		view.setHideBG(false);
+	};
 	const setOptions = (options?: StoryOptions) => setState('options', options);
 	const addJournalEntry = (entry: string) =>
 		setState('journal', (journal) => [...journal, entry]);
@@ -241,6 +291,8 @@ const ControllerProvider: Component<Props> = (props) => {
 	const context: ControllerFns = {
 		state,
 		view,
+		endGame,
+		hasRan,
 		toggleFlag,
 		runDialogue,
 		queueDialogue,

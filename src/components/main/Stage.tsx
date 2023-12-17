@@ -34,6 +34,7 @@ const Stage: Component<props> = () => {
 			}, 0);
 
 		resize();
+
 		view.runOnResize(resize);
 	});
 
@@ -42,11 +43,14 @@ const Stage: Component<props> = () => {
 			<div class='stage'>
 				<div
 					ref={backdrop}
-					class={`backdrop ${view.isSpecial() && 'special'} ${
-						show() ? 'show' : ''
-					}`}
+					class='backdrop'
+					classList={{
+						special: view.isSpecial(),
+						show: show(),
+						pending: view.hideBG(),
+					}}
 					style={{
-						'background': `url(/backgrounds/${state.bgImage}) center center / cover no-repeat`,
+						background: `url(/backgrounds/${state.bgImage}) center center / cover no-repeat`,
 					}}
 				></div>
 				<Side left />

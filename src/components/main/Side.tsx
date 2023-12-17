@@ -24,13 +24,15 @@ const Side: Component<props> = (props) => {
 							props.right
 								? (state._rightPortraitImage ||
 										(state.rightDialogue &&
-											(state.rightDialogue?.portrait ||
-												entityLUT[state.rightDialogue!.entity].portrait))) ??
+											(state.rightDialogue?.portraitImage ||
+												entityLUT[state.rightDialogue!.entity]
+													.portraitImage))) ??
 								  ''
 								: (state._leftPortraitImage ||
 										(state.leftDialogue &&
-											(state.leftDialogue?.portrait ||
-												entityLUT[state.leftDialogue!.entity].portrait))) ??
+											(state.leftDialogue?.portraitImage ||
+												entityLUT[state.leftDialogue!.entity]
+													.portraitImage))) ??
 								  ''
 						}
 						hide={props.right ? view.hideRightImage() : view.hideLeftImage()}

@@ -1,3 +1,5 @@
+import { OmitDefaults } from '../types/utils';
+
 export const deepCopy = (obj: Record<string, any>) =>
 	JSON.parse(JSON.stringify(obj));
 
@@ -74,3 +76,20 @@ export function preloadImages(urls: string[]) {
 		imgs.push(img);
 	}
 }
+
+export const createValidator =
+	<T, D extends keyof T, K extends string = never>() =>
+	//@ts-ignore -- it works 🤷🏻‍♂️
+	<P extends Partial<T>, V = OmitDefaults<OmitDefaults<T, D>, keyof P>>(
+		defProps: P
+	) =>
+	<U extends string>(items: Record<K extends never ? U : K, V>) =>
+		[defProps, items] as const;
+
+export type Dice = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20' | 'd100';
+export const roll = (num: number, dice: Dice) => {
+	let res = 0;
+	for (let i = 0; i < num; i++)
+		res += Math.ceil(Math.random() * parseInt(dice.slice(1)));
+	return res;
+};

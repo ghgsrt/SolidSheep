@@ -6,7 +6,7 @@ import { MP2DefaultProps } from './dialogues/MP2';
 import { PLDefaultProps } from './dialogues/PL';
 import { SBDefaultProps } from './dialogues/SB';
 import { Dialogue, defaultDialogueProps } from './dialogues/dialogue';
-import { Entity, defaultEntityProps } from './dialogues/entities/entity';
+import { Entity, defaultEntityProps } from './entities/entity';
 import {
 	Armor,
 	Item,

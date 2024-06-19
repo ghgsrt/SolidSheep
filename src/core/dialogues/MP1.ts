@@ -11,11 +11,10 @@ export type MP1DialogueName = (typeof MP1DialogueNames)[number];
 
 export const [MP1DefaultProps, MP1Dialogues] = createDialogue({
 	entity: 'MP1',
-})({
+})(({ setOptions, runDialogue }) => ({
 	playerTakesScroll: {
 		text: ['What is that? Can you <strong>explain</strong> it to us?'],
-		onEnd: ({ runDialogue, setOptions }) => {
-			console.log('huh');
+		onEnd: () => {
 			setOptions({
 				"I'm not sure": () => runDialogue('PL', 'explainsScroll'),
 				'Examine the scroll': () => runDialogue('DM', 'playerExaminesScroll'),
@@ -26,7 +25,7 @@ export const [MP1DefaultProps, MP1Dialogues] = createDialogue({
 	},
 	shouldWeFollow: {
 		text: ['Should we follow them?'],
-		onEnd: ({ setOptions, runDialogue }) => {
+		onEnd: () => {
 			setOptions({
 				'Chase after Guz': () => runDialogue('DM', 'chaseGuz'),
 				'Allow Guz to take Finethir': () =>
@@ -34,4 +33,4 @@ export const [MP1DefaultProps, MP1Dialogues] = createDialogue({
 			});
 		},
 	},
-});
+}));

@@ -1,4 +1,4 @@
-import { OmitDefaults } from '../../../types/utils';
+import { OmitDefaults } from '../../types/utils';
 
 export type Entity = {
 	id: EntityID;

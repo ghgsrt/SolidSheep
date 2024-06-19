@@ -6,7 +6,7 @@ import {
 	amoMPNames,
 	femaleMPNames,
 	maleMPNAmes,
-} from '../../core/dialogues/entities/entity';
+} from '../../core/entities/entity';
 import { getRandomElement } from '../../utils/utils';
 
 type props = {};

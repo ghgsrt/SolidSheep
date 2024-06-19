@@ -1,4 +1,4 @@
-import { OmitDefaults } from '../types/utils';
+import { EnforceArrayElements, OmitDefaults } from '../types/utils';
 
 export const deepCopy = (obj: Record<string, any>) =>
 	JSON.parse(JSON.stringify(obj));
@@ -79,12 +79,35 @@ export function preloadImages(urls: string[]) {
 
 export const createValidator =
 	<T, D extends keyof T, K extends string = never>() =>
-	//@ts-ignore -- it works 🤷🏻‍♂️
-	<P extends Partial<T>, V = OmitDefaults<OmitDefaults<T, D>, keyof P>>(
-		defProps: P
-	) =>
-	<U extends string>(items: Record<K extends never ? U : K, V>) =>
-		[defProps, items] as const;
+	<
+		P extends Partial<T>,
+		F extends Record<string, Function> | undefined = undefined,
+		//@ts-ignore -- it works 🤷🏻‍♂️
+		V = OmitDefaults<OmitDefaults<T, D>, keyof P>
+	>(
+		defProps: P,
+		fns?: F
+	) => {
+		type _Items<U extends string> = Record<K extends never ? U : K, V | V[]>;
+		return <U extends string>(
+			items: F extends undefined ? _Items<U> : (fns: F) => _Items<U>
+		) => [defProps, items instanceof Function ? items(fns!) : items] as const;
+	};
+// export const createValidator =
+// 	<T, D extends keyof T, K extends string = never>() =>
+// 	<
+// 		P extends Partial<T>,
+// 		F extends Record<string, Function>,
+// 		//@ts-ignore -- it works 🤷🏻‍♂️
+// 		V = OmitDefaults<OmitDefaults<T, D>, keyof P>
+// 	>(
+// 		defProps: P,
+// 		fns: F
+// 	) => {
+// 		return (
+// 			items: <U extends string>(fns: F) => Record<K extends never ? U : K, V>
+// 		) => [defProps, items instanceof Function ? items(fns!) : items] as const;
+// 	};
 
 export type Dice = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20' | 'd100';
 export const roll = (num: number, dice: Dice) => {

@@ -1,7 +1,7 @@
 import { createStore } from 'solid-js/store';
 import { Item } from '../core/items/item';
 import { Dialogue, GetDialogue } from '../core/dialogues/dialogue';
-import { EntityID } from '../core/dialogues/entities/entity';
+import { EntityID } from '../core/entities/entity';
 import { formatLabel } from '../utils/utils';
 import { Accessor, batch, createMemo } from 'solid-js';
 import { entityLUT } from '../core/LUTs';
@@ -91,9 +91,9 @@ export type State = {
 
 	ranDialogues: Set<GetDialogue<EntityID>>;
 
-	context?: ControllerFns;
+	// context?: ControllerFns;
 	getPortrait: (side: 'left' | 'right', key: 'Image' | 'Name') => string;
-	provideContext: (context: ControllerFns) => void;
+	// provideContext: (context: ControllerFns) => void;
 	// activeDialogue?: Dialogue;
 	// functions
 	leftPortraitImage: Accessor<string>;
@@ -168,10 +168,10 @@ const defaultState: State = {
 
 	ranDialogues: new Set(),
 
-	context: undefined,
-	provideContext: (context) => {
-		setState('context', context);
-	},
+	// context: undefined,
+	// provideContext: (context) => {
+	// 	setState('context', context);
+	// },
 
 	getPortrait: (side, key) => {
 		return (
@@ -256,3 +256,6 @@ const defaultState: State = {
 };
 
 setState(defaultState);
+
+
+

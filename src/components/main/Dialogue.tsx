@@ -2,6 +2,7 @@ import { Component, Show, createEffect, createSignal, onMount } from 'solid-js';
 import { state } from '../../contexts/SessionState';
 import { useController } from '../../contexts/Controller';
 import useEventListener from '../../hooks/useEventListener';
+import { stateController } from '../../core/state/controller';
 
 type props = {};
 
@@ -28,8 +29,8 @@ const Dialogue: Component<props> = () => {
 	};
 
 	const continueDialogue = () => {
-		if (text().length < state.dialogue.length) {
-			setText(state.dialogue);
+		if (text().length < (stateController.dialogue().length ?? 0)) {
+			setText(stateController.dialogue());
 			return;
 		}
 
@@ -38,7 +39,7 @@ const Dialogue: Component<props> = () => {
 
 		if (!state.options) {
 			setText('');
-			controller.continueDialogue();
+			stateController.continueDialogue();
 			resize();
 		}
 	};
@@ -50,7 +51,7 @@ const Dialogue: Component<props> = () => {
 		let done = false;
 
 		//@ts-ignore -- force solid to watch state.dialogue
-		const _force_watch = state.dialogue;
+		const _force_watch = stateController.dialogue();
 
 		setText('');
 		resize();
@@ -62,15 +63,15 @@ const Dialogue: Component<props> = () => {
 
 			if (elapsed > step) {
 				setText((text) => {
-					let next = state.dialogue.charAt(text.length);
+					let next = stateController.dialogue().charAt(text.length);
 					if (next === '<') {
-						let end = state.dialogue.indexOf('>', text.length);
-						next = state.dialogue.substring(text.length, end + 1);
+						let end = stateController.dialogue().indexOf('>', text.length);
+						next = stateController.dialogue().substring(text.length, end + 1);
 					}
 
 					next = text + next;
 
-					if (next.length === state.dialogue.length) {
+					if (next.length === stateController.dialogue().length) {
 						console.log('canceled');
 						done = true;
 					}

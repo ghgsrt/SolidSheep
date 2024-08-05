@@ -5,7 +5,7 @@ import { SBDialogues } from './dialogues/SB';
 import { MP1Dialogues } from './dialogues/MP1';
 import { MP2Dialogues } from './dialogues/MP2';
 import { PLDialogues } from './dialogues/PL';
-import { entities } from './entities/entity';
+import { entities } from './dialogues/entities/entity';
 import { items } from './items/item';
 
 const generateLUT = <

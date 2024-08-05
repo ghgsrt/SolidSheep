@@ -10,9 +10,7 @@ export interface Item {
 	img: string;
 	quantity: number;
 	qName: string;
-	examined?: boolean;
 	onUse?: (fns: ControllerFns) => void;
-	onExamine?: (fns: ControllerFns) => void;
 }
 
 export interface Weapon extends Item {
@@ -33,9 +31,6 @@ export const defaultItemProps = {
 	img: '',
 	quantity: 1,
 	qName: 'quantity',
-	examined: false,
-	// onUse: undefined,
-	// onExamine: undefined,
 } as const satisfies Partial<Item>;
 
 export const defaultWeaponProps = {

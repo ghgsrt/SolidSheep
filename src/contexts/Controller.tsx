@@ -12,7 +12,7 @@ import { ItemID } from '../core/items/item';
 import { produce } from 'solid-js/store';
 import { GetDialogue, Dialogue } from '../core/dialogues/dialogue';
 import { itemLUT, speakerLUT } from '../core/LUTs';
-import { EntityID } from '../core/entities/entity';
+import { EntityID } from '../core/dialogues/entities/entity';
 import { ViewValues, useView } from './View';
 import { Tail } from '../types/utils';
 import { sleep } from '../utils/utils';
@@ -43,8 +43,8 @@ type Async<T extends (...args: any[]) => any> = (
 ) => Promise<ReturnType<T>>;
 
 export type ControllerFns = {
-	// state: State;
-	// view: ViewValues;
+	state: State;
+	view: ViewValues;
 	endGame: () => Promise<void>;
 	toggleFlag: (flag: Flag, set?: boolean) => void;
 	queueDialogue: DialogueLookupFn;
@@ -67,7 +67,6 @@ export type ControllerFns = {
 	pushInventoryItem: (itemID: ItemID) => void;
 	consumeInventoryItem: (itemID: ItemID) => void;
 	useInventoryItem: (itemID: ItemID) => void;
-	hasExamined: (itemID: ItemID) => boolean;
 };
 
 type Props = {
@@ -289,11 +288,9 @@ const ControllerProvider: Component<Props> = (props) => {
 		state.inventory[idx]!.onUse?.(context);
 	};
 
-	const hasExamined = (itemID: ItemID) => itemLUT[itemID]?.examined ?? false;
-
 	const context: ControllerFns = {
-		// state,
-		// view,
+		state,
+		view,
 		endGame,
 		hasRan,
 		toggleFlag,
@@ -310,9 +307,8 @@ const ControllerProvider: Component<Props> = (props) => {
 		pushInventoryItem,
 		consumeInventoryItem,
 		useInventoryItem,
-		hasExamined,
 	};
-	// state.provideContext(context);
+	state.provideContext(context);
 
 	return (
 		<ControllerContext.Provider value={context}>

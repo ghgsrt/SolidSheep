@@ -33,18 +33,3 @@ export type EnsureFnParamTyping<T> = {
 		? (...args: Parameters<T[P]>) => ReturnType<T[P]>
 		: T[P];
 };
-
-export type ExtendFirstParam<
-	T extends (...args: any[]) => any,
-	E extends any
-> = (...args: [Parameters<T>[0] | E, ...Tail<Parameters<T>>]) => ReturnType<T>;
-
-export type Async<T extends (...args: any[]) => any> = (
-	...args: Parameters<T>
-) => Promise<ReturnType<T>>;
-
-export type EnforceArrayElements<T, E> = T extends Array<infer U>
-	? U extends E
-		? T
-		: never
-	: T;

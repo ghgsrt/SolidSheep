@@ -333,7 +333,7 @@ main.show[data-view='main'] {
 
 .backdrop {
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 3.8rem);
 	position: absolute;
 	top: 100%;
 	left: 0;

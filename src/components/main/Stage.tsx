@@ -35,30 +35,6 @@ const Stage: Component<props> = () => {
 		}
 	});
 
-	onMount(() => {
-		const inv = document.querySelector<HTMLElement>('.inventory');
-		// const initHeight = backdrop.style.height;
-		// const initHeightQueue = backdropQueue.style.height;
-
-		const resize = () =>
-			// defer after inventory resizes
-			setTimeout(() => {
-				console.log('stage', backdrop.clientHeight, inv?.clientHeight, backdrop.clientHeight - inv!.clientHeight)
-				// backdropQueue.style.height = initHeightQueue;
-				backdropQueue.style.height = `${
-					backdropQueue.clientHeight - inv!.clientHeight
-				}px`;
-				// backdrop.style.height = initHeight;
-				backdrop.style.height = `${
-					backdrop.clientHeight - inv!.clientHeight
-				}px`;
-			}, 0);
-
-		setTimeout(resize)
-
-		view.runOnResize(false, resize);
-	});
-
 	return (
 		<>
 			<div class='stage'>

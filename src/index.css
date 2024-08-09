@@ -13,7 +13,7 @@
 	--trans-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 	--width: min(100vw, (calc(100dvh * 2 / 3)));
-	font-size: calc(var(--width) / 35);
+	font-size: calc(var(--width) / 50);
 
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
@@ -26,6 +26,12 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 863px) {
+	:root {
+		font-size: calc(var(--width) / 35);
+	}
 }
 
 ::selection {
@@ -75,7 +81,7 @@ body.block-transitions * {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	justify-content: c	enter;
+	justify-content: c enter;
 	align-items: center;
 	overflow: hidden;
 	position: relative;
@@ -259,7 +265,7 @@ main.show[data-view='main'] {
 .character-wrapper {
 	/* width: 30vh; */
 	/* height: 100%; */
-	height: 26rem;
+	height: 38rem;
 	max-height: 50vw;
 	position: relative;
 	background: transparent;

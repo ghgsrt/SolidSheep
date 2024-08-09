@@ -38,8 +38,15 @@ const Side: Component<props> = (props) => {
 						hide={props.right ? view.hideRightImage() : view.hideLeftImage()}
 						active={state.activeSpeaker === state[`${side}Dialogue`]?.entity}
 					/>
-					<svg>
-						<path d='M100,100 H-1 V20 A70,70 0 0,0 60,91 Z' />
+					{/* <div class='half-pipe'></div> */}
+					<svg viewBox='0 0 100 100'>
+						<path
+							d={
+								props.right
+									? 'M-3,15 L0,105 L100,101 A100,100 0 0 1 -1,15 Z'
+									: `M103,15 L100,105 L0,101 A100,100 0 0 0 101,15 Z`
+							}
+						/>
 					</svg>
 				</div>
 				<Inventory side={side} />

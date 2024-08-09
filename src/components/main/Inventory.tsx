@@ -1,7 +1,6 @@
-import { Component, For, onMount } from 'solid-js';
+import { Component, For } from 'solid-js';
 import InventoryItem from './InventoryItem';
 import { state } from '../../contexts/SessionState';
-import { useView } from '../../contexts/View';
 
 type props = {
 	side: 'left' | 'right';
@@ -9,7 +8,6 @@ type props = {
 
 const Inventory: Component<props> = (props) => {
 	let itemRefs: HTMLDivElement[] = [];
-	const view = useView()!;
 
 	const getOffset = (idx: number) => {
 		const offset: string[] = [props.side];
@@ -19,13 +17,6 @@ const Inventory: Component<props> = (props) => {
 
 		return offset as ['left' | 'right', string];
 	};
-
-	onMount(() => {
-		view.runOnResize(() => {
-			for (const item of itemRefs) item.style.height = `${item.offsetWidth}px`;
-		});
-		for (const item of itemRefs) item.style.height = `${item.offsetWidth}px`;
-	});
 
 	return (
 		<>

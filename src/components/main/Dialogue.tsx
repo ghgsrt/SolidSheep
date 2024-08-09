@@ -2,30 +2,41 @@ import { Component, Show, createEffect, createSignal, onMount } from 'solid-js';
 import { state } from '../../contexts/SessionState';
 import { useController } from '../../contexts/Controller';
 import useEventListener from '../../hooks/useEventListener';
+import { useView } from '../../contexts/View';
 
 type props = {};
 
+let dialogueContainer: HTMLDivElement;
 let dialogue: HTMLDivElement;
 let dialogueClone: HTMLDivElement;
 const Dialogue: Component<props> = () => {
 	const [timeoutID, setTimeoutID] = createSignal(0);
 	const [showBlinker, setShowBlinker] = createSignal(false);
 	const [text, setText] = createSignal('');
+	const view = useView()!;
 	const controller = useController()!;
 
 	const resize = () => {
 		setTimeout(() => {
-			const width = parseFloat(window.getComputedStyle(dialogue).width);
-			const cloneWidth = parseFloat(
-				window.getComputedStyle(dialogueClone).width
+			const padding = Math.ceil(
+				parseFloat(window.getComputedStyle(dialogue).paddingLeft) * 2
 			);
-			const padding = parseFloat(window.getComputedStyle(dialogue).paddingLeft);
-			// const width = dialogue.offsetWidth;
-			// const cloneWidth = dialogueClone.offsetWidth;
-			console.log(width, cloneWidth);
-			dialogue.style.width = `${cloneWidth + padding * 2}px`;
+			const _padding = Math.ceil(
+				parseFloat(window.getComputedStyle(dialogueContainer).paddingLeft) * 2
+			);
+			const width = dialogueContainer.offsetWidth - _padding;
+			const cloneWidth = dialogueClone.offsetWidth + 1 + padding;
+			// console.log(
+			// 	width,
+			// 	dialogueContainer.clientWidth,
+			// 	dialogueContainer.offsetWidth,
+			// 	window.getComputedStyle(dialogueContainer).width,
+			// 	cloneWidth
+			// );
+			dialogue.style.width = `${Math.min(width, cloneWidth)}px`;
 		}, 0);
 	};
+	view.runOnResize(true, resize);
 
 	const continueDialogue = () => {
 		if (text().length < state.dialogue.length) {
@@ -37,9 +48,9 @@ const Dialogue: Component<props> = () => {
 		setShowBlinker(false);
 
 		if (!state.options) {
-			setText('');
+			// setText('');
 			controller.continueDialogue();
-			resize();
+			// resize();
 		}
 	};
 
@@ -109,7 +120,11 @@ const Dialogue: Component<props> = () => {
 
 	return (
 		<>
-			<div class='dialogue-container' onClick={continueDialogue}>
+			<div
+				ref={dialogueContainer}
+				class='dialogue-container'
+				onClick={continueDialogue}
+			>
 				{!state.options && (
 					<Show when={showBlinker()}>
 						<div class='dialogue-blinker' />

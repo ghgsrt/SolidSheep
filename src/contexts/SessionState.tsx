@@ -112,6 +112,7 @@ export type State = {
 	clearPortrait: (side: 'left' | 'right', key?: 'image' | 'name') => void;
 	clearPortraits: (key?: 'image' | 'name') => void;
 	hasExamined: (item: Item) => boolean;
+	reset: () => void;
 };
 
 //@ts-ignore
@@ -252,6 +253,9 @@ const defaultState: State = {
 	hasExamined(item) {
 		if (item.id === 'scrollOfSPA') return state.hasExaminedScroll;
 		else return false;
+	},
+	reset() {
+		setState(defaultState);
 	},
 };
 

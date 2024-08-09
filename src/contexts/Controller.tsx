@@ -86,6 +86,7 @@ const ControllerProvider: Component<Props> = (props) => {
 		});
 		setOptions(undefined);
 		clearPortraits();
+		state.reset();
 	};
 
 	//!!! GIVE BEFORENEXT INFO ON WHAT DIALOGUE IS NEXT

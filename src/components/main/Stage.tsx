@@ -43,19 +43,20 @@ const Stage: Component<props> = () => {
 		const resize = () =>
 			// defer after inventory resizes
 			setTimeout(() => {
-				backdropQueue.style.height = initHeightQueue;
+				console.log('stage', backdrop.clientHeight, inv?.clientHeight, backdrop.clientHeight - inv!.clientHeight)
+				// backdropQueue.style.height = initHeightQueue;
 				backdropQueue.style.height = `${
 					backdropQueue.clientHeight - inv!.clientHeight
 				}px`;
-				backdrop.style.height = initHeight;
+				// backdrop.style.height = initHeight;
 				backdrop.style.height = `${
 					backdrop.clientHeight - inv!.clientHeight
 				}px`;
 			}, 0);
 
-		resize();
+		setTimeout(resize)
 
-		view.runOnResize(resize);
+		view.runOnResize(false, resize);
 	});
 
 	return (

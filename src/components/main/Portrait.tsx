@@ -9,12 +9,12 @@ type props = {
 
 const Portrait: Component<props> = (props) => {
 	let portrait: HTMLDivElement;
-	const { runOnResize } = useView()!;
+	const view = useView()!;
 
 	onMount(() => {
 		const resize = () =>
 			(portrait.style.height = `${portrait!.offsetWidth * 2}px`);
-		runOnResize(resize);
+		view.runOnResize(true, resize);
 		resize();
 	});
 

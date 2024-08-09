@@ -57,12 +57,14 @@ export type ViewValues = {
 	setRightTabKey: Setter<string>;
 	leftTabKeys: string[];
 	rightTabKeys: string[];
-	runOnResize: (...fns: (() => void)[]) => void;
+	runOnResize: (front?: boolean, ...fns: (() => void)[]) => void;
 	hide: (side?: 'left' | 'right', spec?: 'image' | 'name') => Promise<void>;
 };
 
 const ViewContext = createContext<ViewValues>();
 
+let main: HTMLElement;
+let body: HTMLBodyElement;
 const ViewProvider: Component<Props> = (props) => {
 	const [currView, setCurrView] = createSignal<View>('intro');
 	const [gameEnding, setGameEnding] = createSignal(false);
@@ -133,24 +135,28 @@ const ViewProvider: Component<Props> = (props) => {
 	}
 
 	const _runOnResize: (() => void)[] = [];
-	const runOnResize: ViewValues['runOnResize'] = (...fns) =>
-		_runOnResize.push(...fns);
+	const runOnResize: ViewValues['runOnResize'] = (front, ...fns) =>
+		_runOnResize[front ? 'unshift' : 'push'](...fns);
 
 	const onResize = () => {
+		body.classList.add('block-transitions');
 		for (const fn of _runOnResize) fn();
+		body.classList.remove('block-transitions');
 	};
 
 	useEventListener('resize', onResize);
 
 	onMount(() => {
-		const main = document.querySelector('main')!;
+		body = document.querySelector('body')!;
+		main = document.querySelector('main')!;
 
-		runOnResize(() =>
+		runOnResize(true, () => {
+			// console.log('balls', main.clientWidth, body.clientWidth, Math.round(parseFloat(window.getComputedStyle(body).maxWidth)))
 			setIsSpecial(
 				main.clientWidth ===
-					Math.round(parseFloat(window.getComputedStyle(main).maxWidth))
-			)
-		);
+					Math.round(parseFloat(window.getComputedStyle(body).maxWidth))
+			);
+		});
 
 		setTimeout(onResize, 0);
 	});

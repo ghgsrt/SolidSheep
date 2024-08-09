@@ -21,7 +21,7 @@ const TabBar: Component<props> = () => {
 				tab.style.width = `${max}px`;
 			}
 		};
-		view.runOnResize(resize);
+		view.runOnResize(true, resize);
 		resize();
 	});
 

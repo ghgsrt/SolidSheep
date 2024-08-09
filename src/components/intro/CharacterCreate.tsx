@@ -59,7 +59,7 @@ const CharacterCreate: Component<props> = () => {
 					<For each={characters}>
 						{(character, i) => (
 							<div
-								class='wrapper'
+								class='character-wrapper'
 								classList={{
 									selected: characterIdx() === i(),
 								}}
@@ -76,7 +76,7 @@ const CharacterCreate: Component<props> = () => {
 						)}
 					</For>
 				</div>
-				<div class='wrapper'>
+				<div class='character-create-wrapper'>
 					<input
 						ref={input}
 						type='text'

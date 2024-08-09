@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, onMount } from 'solid-js';
+import { Component, createEffect, createSignal } from 'solid-js';
 import Middle from './Middle';
 import Side from './Side';
 import { useView } from '../../contexts/View';

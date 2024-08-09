@@ -3,7 +3,6 @@ import {
 	For,
 	createEffect,
 	createSignal,
-	onCleanup,
 } from 'solid-js';
 import { setState, state } from '../../contexts/SessionState';
 import { useView } from '../../contexts/View';

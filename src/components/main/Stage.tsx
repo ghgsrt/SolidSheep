@@ -37,8 +37,8 @@ const Stage: Component<props> = () => {
 
 	onMount(() => {
 		const inv = document.querySelector<HTMLElement>('.inventory');
-		const initHeight = backdrop.style.height;
-		const initHeightQueue = backdropQueue.style.height;
+		// const initHeight = backdrop.style.height;
+		// const initHeightQueue = backdropQueue.style.height;
 
 		const resize = () =>
 			// defer after inventory resizes

@@ -1,4 +1,4 @@
-## A Wild Sheep Chase
+## The Wild Sheep Chase
 
 A simple, branching narrative game based on the D&D one-shot of the same name.
 
